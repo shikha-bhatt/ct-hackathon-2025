@@ -222,4 +222,65 @@ public class AzureOpenAIService {
 
         return getChatCompletion(messages);
     }
+
+    public Mono<String> getSimInformationRecommendations(String destination, String duration) {
+        String systemPrompt = """
+            You are a travel connectivity expert specializing in international SIM cards and mobile connectivity for Indian travelers. 
+            Provide comprehensive, accurate, and up-to-date information about SIM card options, 
+            network coverage, costs, and connectivity solutions. Include specific details about 
+            local carriers, eSIM options, international SIMs, and provide actionable recommendations.
+            
+            Format your response in a structured way with clear sections for:
+            1. **SIM Type Comparison** (Local SIM vs eSIM vs International SIM vs Roaming)
+            2. **Cost Analysis** (Total cost including activation, data, and hidden fees)
+            3. **Network Coverage** (Best carriers for different regions in the destination)
+            4. **Acquisition Methods** (Where and how to get each SIM type)
+            5. **Travel Tips** (Best practices, activation time, customer support)
+            6. **Risk Assessment** (Potential issues and how to avoid them)
+            7. **Country-Specific Information** (Local carriers, regulations, requirements)
+            8. **Price Comparisons** (Detailed cost breakdown for different options)
+            9. **Network Quality** (Speed, coverage maps, reliability)
+            10. **Activation Process** (Step-by-step guide for each option)
+            11. **Customer Support** (Language support, availability, contact methods)
+            12. **Best Recommendations** (Top picks based on trip duration and budget)
+            
+            Be specific about the destination, duration, and provide real, actionable information 
+            that would help an Indian traveler make informed decisions. Include current pricing, 
+            official websites, and practical tips for getting the best connectivity.
+            """;
+
+        String userPrompt = String.format("""
+            I'm an Indian traveler planning to visit %s for %s. 
+            Please provide comprehensive SIM card and connectivity information including:
+            
+            1. What are the best SIM card options for %s?
+            2. How do local SIM cards compare to eSIM and international SIMs?
+            3. What are the costs for different SIM options for %s?
+            4. Which carriers have the best network coverage in %s?
+            5. Where can I purchase SIM cards in %s?
+            6. What documents do I need to get a local SIM?
+            7. How long does activation take for each option?
+            8. What are the data plans and pricing?
+            9. Which option would you recommend for %s trip?
+            10. What are the pros and cons of each option?
+            11. Any country-specific regulations or requirements?
+            12. How reliable is the network coverage in different areas?
+            
+            Please provide comprehensive, detailed information that would help an Indian traveler 
+            get the best connectivity solution for %s.
+            """, destination, duration, destination, duration, destination, destination, duration, destination);
+
+        List<AzureOpenAIRequest.Message> messages = List.of(
+                AzureOpenAIRequest.Message.builder()
+                        .role("system")
+                        .content(systemPrompt)
+                        .build(),
+                AzureOpenAIRequest.Message.builder()
+                        .role("user")
+                        .content(userPrompt)
+                        .build()
+        );
+
+        return getChatCompletion(messages);
+    }
 } 
