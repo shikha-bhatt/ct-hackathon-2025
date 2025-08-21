@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-// API Configuration
+// API Configuration - Real CT Hackathon 2025 Keys
 const AZURE_CONFIG = {
-  endpoint: import.meta.env.VITE_AZURE_ENDPOINT || 'https://hackathon-openui-test.openai.azure.com/',
-  apiKey: import.meta.env.VITE_AZURE_API_KEY || '',
-  deployment: import.meta.env.VITE_AZURE_DEPLOYMENT || 'gpt-4o',
-  apiVersion: import.meta.env.VITE_AZURE_API_VERSION || '2025-01-01-preview'
+  endpoint: process.env.VITE_AZURE_ENDPOINT,
+  apiKey: process.env.VITE_AZURE_API_KEY,
+  deployment: process.env.VITE_AZURE_DEPLOYMENT,
+  apiVersion: process.env.VITE_AZURE_API_VERSION
 };
 
 const CLEARTRIP_CONFIG = {
-  hostname: import.meta.env.VITE_CLEARTRIP_HOSTNAME || 'https://b2b.cleartrip.com',
-  apiKey: import.meta.env.VITE_CLEARTRIP_API_KEY || '',
-  daAccount: import.meta.env.VITE_CLEARTRIP_DA_ACCOUNT || ''
+  hostname: process.env.VITE_CLEARTRIP_HOSTNAME,
+  apiKey: process.env.VITE_CLEARTRIP_API_KEY,
+  daAccount: process.env.VITE_CLEARTRIP_DA_ACCOUNT
 };
 
 // Azure OpenAI API Service
