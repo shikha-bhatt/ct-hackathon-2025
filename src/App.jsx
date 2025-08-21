@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plane, Hotel, MapPin, Sparkles, MessageCircle, Zap, Globe, Star, Image, Video, FileText, Palette, Play, Video as VideoIcon, Smartphone, FileCheck, Shield, Route, DollarSign, CreditCard } from 'lucide-react';
 import { travelService } from './services/api';
 
@@ -18,6 +18,11 @@ function App() {
     startDate: '',
     endDate: ''
   });
+
+  // Debug: Log form state changes
+  useEffect(() => {
+    console.log('🔍 SIM Search State Updated:', simSearch);
+  }, [simSearch]);
 
   // Visa Information State
   const [visaSearch, setVisaSearch] = useState({
@@ -173,13 +178,27 @@ function App() {
   };
 
   const handleSIMSearch = async () => {
-    if (!simSearch.destination.trim() || !simSearch.startDate.trim() || !simSearch.endDate.trim()) return;
+    console.log('🔍 SIM Search Form State:', simSearch);
+    console.log('🔍 Destination:', simSearch.destination);
+    console.log('🔍 Start Date:', simSearch.startDate);
+    console.log('🔍 End Date:', simSearch.endDate);
+    
+    if (!simSearch.destination.trim() || !simSearch.startDate.trim() || !simSearch.endDate.trim()) {
+      console.log('❌ Form validation failed - missing required fields');
+      return;
+    }
     
     setLoading(true);
     setError(null);
     
     try {
-      const simInfo = await travelService.getSIMInformation(simSearch.destination, simSearch.duration);
+      console.log('🔍 Calling API with:', {
+        destination: simSearch.destination,
+        startDate: simSearch.startDate,
+        endDate: simSearch.endDate
+      });
+      
+      const simInfo = await travelService.getSIMInformation(simSearch.destination, simSearch.startDate, simSearch.endDate);
       setResults(simInfo);
     } catch (err) {
       setError('Failed to get SIM information. Please try again.');
@@ -479,7 +498,10 @@ function App() {
                     <input
                       type="date"
                       value={simSearch.startDate}
-                      onChange={(e) => setSimSearch({...simSearch, startDate: e.target.value})}
+                      onChange={(e) => {
+                        console.log('📅 Start Date Changed:', e.target.value);
+                        setSimSearch({...simSearch, startDate: e.target.value});
+                      }}
                       className="input-field"
                     />
                     <label className="block text-sm font-medium text-gray-300 mb-3 mt-3">
@@ -488,7 +510,10 @@ function App() {
                     <input
                       type="date"
                       value={simSearch.endDate}
-                      onChange={(e) => setSimSearch({...simSearch, endDate: e.target.value})}
+                      onChange={(e) => {
+                        console.log('📅 End Date Changed:', e.target.value);
+                        setSimSearch({...simSearch, endDate: e.target.value});
+                      }}
                       className="input-field"
                     />
                   </div>

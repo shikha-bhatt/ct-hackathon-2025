@@ -230,14 +230,15 @@ export class SimInformationService {
     });
   }
 
-  async getSIMInformation(destination, duration) {
+  async getSIMInformation(destination, startDate, endDate) {
     try {
       console.log('🔍 Fetching SIM information from Spring Boot backend...');
-      console.log('Destination:', destination, 'Duration:', duration);
+      console.log('Destination:', destination, 'StartDate:', startDate, 'EndDate:', endDate);
       
       const response = await this.client.post('/sim/information', {
         destination: destination,
-        duration: duration
+        startDate: startDate,
+        endDate: endDate
       });
       
       console.log('✅ SIM information received from backend:', response.data);
@@ -248,7 +249,7 @@ export class SimInformationService {
       
       // Fallback to mock data if backend is not available
       console.log('🔄 Falling back to mock data...');
-      return this.getMockSIMInformation(destination, duration);
+      return this.getMockSIMInformation(destination, 'calculated duration');
     }
   }
 
@@ -411,8 +412,8 @@ export class TravelService {
   }
 
   // New method to get SIM information using the Spring Boot backend
-  async getSIMInformation(destination, duration) {
-    return await this.simInfo.getSIMInformation(destination, duration);
+  async getSIMInformation(destination, startDate, endDate) {
+    return await this.simInfo.getSIMInformation(destination, startDate, endDate);
   }
 
   parseSearchQuery(aiResponse) {
