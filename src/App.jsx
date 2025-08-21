@@ -56,6 +56,100 @@ function App() {
     destination: ''
   });
 
+  // Function to format AI recommendations
+  const formatAIRecommendations = (text) => {
+    if (!text) return '';
+    
+    return text
+      // Convert markdown headers to styled headers
+      .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-blue-300 mb-3 mt-6">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-blue-200 mb-4 mt-8">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold text-blue-100 mb-6 mt-10">$1</h1>')
+      
+      // Convert bold text
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
+      
+      // Convert italic text
+      .replace(/\*(.*?)\*/g, '<em class="text-gray-300 italic">$1</em>')
+      
+      // Convert markdown tables to beautiful HTML tables
+      .replace(/(\|.*\|[\s\S]*?)(?=\n\n|\n[^|]|$)/g, (match) => {
+        const lines = match.trim().split('\n').filter(line => line.trim());
+        if (lines.length < 2) return match;
+        
+        // Check if it's actually a table (has | characters)
+        if (!lines[0].includes('|')) return match;
+        
+        // Parse table structure
+        const tableRows = lines.map(line => 
+          line.split('|').map(cell => cell.trim()).filter(cell => cell)
+        );
+        
+        // Remove separator row (contains only dashes and |)
+        const dataRows = tableRows.filter(row => 
+          !row.every(cell => /^[-|:\s]+$/.test(cell))
+        );
+        
+        if (dataRows.length < 2) return match;
+        
+        // Create beautiful HTML table
+        let htmlTable = '<div class="overflow-x-auto my-6"><table class="w-full border-collapse bg-gray-800/50 rounded-lg overflow-hidden border border-gray-600">';
+        
+        // Table header
+        htmlTable += '<thead><tr class="bg-blue-600/30">';
+        dataRows[0].forEach((header, index) => {
+          htmlTable += `<th class="px-4 py-3 text-left text-blue-100 font-semibold border-b border-blue-500/50">${header}</th>`;
+        });
+        htmlTable += '</tr></thead>';
+        
+        // Table body
+        htmlTable += '<tbody>';
+        dataRows.slice(1).forEach((row, rowIndex) => {
+          const rowClass = rowIndex % 2 === 0 ? 'bg-gray-700/30' : 'bg-gray-800/30';
+          htmlTable += `<tr class="${rowClass} hover:bg-gray-600/30 transition-colors">`;
+          row.forEach((cell, cellIndex) => {
+            // Check if cell contains price or special formatting
+            let cellContent = cell;
+            let cellClass = 'px-4 py-3 text-gray-200 border-b border-gray-600/30';
+            
+            // Highlight prices
+            if (/\$[\d,]+/.test(cell)) {
+              cellContent = cell.replace(/(\$[\d,]+)/g, '<span class="text-green-400 font-semibold">$1</span>');
+              cellClass += ' text-center';
+            }
+            // Highlight data amounts
+            else if (/\d+GB|\d+MB/.test(cell)) {
+              cellContent = cell.replace(/(\d+GB|\d+MB)/g, '<span class="text-blue-400 font-medium">$1</span>');
+              cellClass += ' text-center';
+            }
+            // Center align other cells
+            else {
+              cellClass += ' text-center';
+            }
+            
+            htmlTable += `<td class="${cellClass}">${cellContent}</td>`;
+          });
+          htmlTable += '</tr>';
+        });
+        htmlTable += '</tbody></table></div>';
+        
+        return htmlTable;
+      })
+      
+      // Convert bullet points
+      .replace(/^- (.*$)/gim, '<div class="flex items-start space-x-3 mb-2"><div class="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div><span class="text-gray-300">$1</span></div>')
+      
+      // Convert numbered lists
+      .replace(/^(\d+)\. (.*$)/gim, '<div class="flex items-start space-x-3 mb-2"><div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">$1</div><span class="text-gray-300">$2</span></div>')
+      
+      // Convert line breaks to proper spacing
+      .replace(/\n\n/g, '</div><div class="mb-4">')
+      .replace(/\n/g, '<br>')
+      
+      // Wrap in container
+      .replace(/^(.*)$/s, '<div class="space-y-4">$1</div>');
+  };
+
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     setResults(null);
@@ -840,101 +934,208 @@ function App() {
                         <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
                           <Smartphone className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">SIM Information for {results.simOptions.data.destination}</h3>
+                        <h3 className="text-xl font-bold gradient-text">SIM Information for {results.simOptions.destination}</h3>
                       </div>
                       
                       {/* AI Recommendations */}
                       <div className="mb-6">
                         <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
                         <div className="prose prose-invert max-w-none">
-                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                            {results.aiRecommendations}
-                          </pre>
+                          <div 
+                            className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.aiRecommendations) }}
+                            style={{
+                              '--tw-prose-headings': 'rgb(209 213 219)',
+                              '--tw-prose-links': 'rgb(59 130 246)',
+                              '--tw-prose-bold': 'rgb(255 255 255)',
+                              '--tw-prose-counters': 'rgb(156 163 175)',
+                              '--tw-prose-bullets': 'rgb(156 163 175)',
+                              '--tw-prose-hr': 'rgb(75 85 99)',
+                              '--tw-prose-quotes': 'rgb(156 163 175)',
+                              '--tw-prose-quote-borders': 'rgb(75 85 99)',
+                              '--tw-prose-captions': 'rgb(156 163 175)',
+                              '--tw-prose-code': 'rgb(255 255 255)',
+                              '--tw-prose-pre-code': 'rgb(209 213 219)',
+                              '--tw-prose-pre-bg': 'rgb(17 24 39)',
+                              '--tw-prose-th-borders': 'rgb(75 85 99)',
+                              '--tw-prose-td-borders': 'rgb(55 65 81)'
+                            }}
+                          />
                         </div>
                       </div>
 
                       {/* SIM Options */}
-                      <div className="space-y-6">
-                        <h4 className="text-lg font-semibold text-gray-200">Available SIM Options</h4>
+                      <div className="space-y-8">
+                        <h4 className="text-xl font-semibold text-gray-200 border-b border-gray-600 pb-2">Available SIM Options</h4>
                         
                         {/* Local Carriers */}
                         <div>
-                          <h5 className="font-semibold text-blue-300 mb-3">Local Carriers</h5>
+                          <h5 className="font-semibold text-blue-300 mb-4 flex items-center">
+                            <div className="w-5 h-5 bg-blue-500 rounded-full mr-3"></div>
+                            Local Carriers
+                          </h5>
                           <div className="space-y-4">
-                            {results.simOptions.data.localCarriers.map((carrier, index) => (
-                              <div key={index} className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h6 className="font-semibold text-blue-200">{carrier.name}</h6>
-                                    <p className="text-blue-300 text-sm">Coverage: {carrier.coverage}</p>
+                            {results.simOptions.localCarriers && results.simOptions.localCarriers.length > 0 ? (
+                              results.simOptions.localCarriers.map((carrier, index) => (
+                                <div key={index} className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-6 hover:bg-blue-900/30 transition-all duration-300">
+                                  <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                      <h6 className="font-semibold text-blue-200 text-lg mb-2">{carrier.name}</h6>
+                                      <div className="space-y-2 text-sm">
+                                        <p className="text-blue-300 flex items-center">
+                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                          Coverage: {carrier.coverage}
+                                        </p>
+                                        <p className="text-blue-300 flex items-center">
+                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                          Network Quality: {carrier.networkQuality}
+                                        </p>
+                                        <p className="text-blue-300 flex items-center">
+                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                          Customer Support: {carrier.customerSupport}
+                                        </p>
+                                        <p className="text-blue-300 flex items-center">
+                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                          Activation: {carrier.activationTime}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="bg-blue-500/20 text-blue-200 px-4 py-2 rounded-lg border border-blue-500/30">
+                                        <span className="text-sm font-medium">Price Range</span>
+                                        <div className="text-lg font-bold">{carrier.price}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="mt-4">
+                                    <p className="text-blue-300 text-sm font-medium mb-3">Data Plans:</p>
+                                    <div className="flex flex-wrap gap-3">
+                                      {carrier.dataPlans && carrier.dataPlans.map((plan, idx) => (
+                                        <span key={idx} className="text-sm bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full border border-blue-500/30 hover:bg-blue-500/30 transition-colors">
+                                          {plan}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="mt-3">
-                                  <p className="text-blue-300 text-sm font-medium">Data Plans:</p>
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {carrier.dataPlans.map((plan, idx) => (
-                                      <span key={idx} className="text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30">
-                                        {plan}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                              ))
+                            ) : (
+                              <p className="text-gray-400 text-sm">No local carrier information available</p>
+                            )}
                           </div>
                         </div>
 
                         {/* International SIMs */}
                         <div>
-                          <h5 className="font-semibold text-green-300 mb-3">International SIMs</h5>
+                          <h5 className="font-semibold text-green-300 mb-4 flex items-center">
+                            <div className="w-5 h-5 bg-green-500 rounded-full mr-3"></div>
+                            International SIMs
+                          </h5>
                           <div className="space-y-4">
-                            {results.simOptions.data.internationalSIMs.map((sim, index) => (
-                              <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-xl p-4">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h6 className="font-semibold text-green-200">{sim.name}</h6>
-                                    <p className="text-green-300 text-sm">Coverage: {sim.coverage}</p>
+                            {results.simOptions.internationalSIMs && results.simOptions.internationalSIMs.length > 0 ? (
+                              results.simOptions.internationalSIMs.map((sim, index) => (
+                                <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-xl p-6 hover:bg-green-900/30 transition-all duration-300">
+                                  <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                      <h6 className="font-semibold text-green-200 text-lg mb-2">{sim.name}</h6>
+                                      <div className="space-y-2 text-sm">
+                                        <p className="text-green-300 flex items-center">
+                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                          Coverage: {sim.coverage}
+                                        </p>
+                                        <p className="text-green-300 flex items-center">
+                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                          Validity: {sim.validity}
+                                        </p>
+                                        <p className="text-green-300 flex items-center">
+                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                          Activation: {sim.activationProcess}
+                                        </p>
+                                        <p className="text-green-300 flex items-center">
+                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                          Support: {sim.customerSupport}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="bg-green-500/20 text-green-200 px-4 py-2 rounded-lg border border-green-500/30">
+                                        <span className="text-sm font-medium">Price Range</span>
+                                        <div className="text-lg font-bold">{sim.price}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="mt-4">
+                                    <p className="text-green-300 text-sm font-medium mb-3">Data Plans:</p>
+                                    <div className="flex flex-wrap gap-3">
+                                      {sim.dataPlans && sim.dataPlans.map((plan, idx) => (
+                                        <span key={idx} className="text-sm bg-green-500/20 text-green-300 px-4 py-2 rounded-full border border-green-500/30 hover:bg-green-500/30 transition-colors">
+                                          {plan}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="mt-3">
-                                  <p className="text-green-300 text-sm font-medium">Data Plans:</p>
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {sim.dataPlans.map((plan, idx) => (
-                                      <span key={idx} className="text-xs bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-500/30">
-                                        {plan}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                              ))
+                            ) : (
+                              <p className="text-gray-400 text-sm">No international SIM information available</p>
+                            )}
                           </div>
                         </div>
 
                         {/* eSIMs */}
                         <div>
-                          <h5 className="font-semibold text-purple-300 mb-3">eSIM Options</h5>
+                          <h5 className="font-semibold text-purple-300 mb-4 flex items-center">
+                            <div className="w-5 h-5 bg-purple-500 rounded-full mr-3"></div>
+                            eSIM Options
+                          </h5>
                           <div className="space-y-4">
-                            {results.simOptions.data.eSIMs.map((esim, index) => (
-                              <div key={index} className="bg-purple-900/20 border border-purple-500/30 rounded-xl p-4">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h6 className="font-semibold text-purple-200">{esim.name}</h6>
-                                    <p className="text-purple-300 text-sm">Coverage: {esim.coverage}</p>
+                            {results.simOptions.eSIMs && results.simOptions.eSIMs.length > 0 ? (
+                              results.simOptions.eSIMs.map((esim, index) => (
+                                <div key={index} className="bg-purple-900/20 border border-purple-500/30 rounded-xl p-6 hover:bg-purple-900/30 transition-all duration-300">
+                                  <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                      <h6 className="font-semibold text-purple-200 text-lg mb-2">{esim.name}</h6>
+                                      <div className="space-y-2 text-sm">
+                                        <p className="text-purple-300 flex items-center">
+                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                          Coverage: {esim.coverage}
+                                        </p>
+                                        <p className="text-purple-300 flex items-center">
+                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                          Compatibility: {esim.compatibility}
+                                        </p>
+                                        <p className="text-purple-300 flex items-center">
+                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                          Activation: {esim.activationTime}
+                                        </p>
+                                        <p className="text-purple-300 flex items-center">
+                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                          Validity: {esim.validity}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="bg-purple-500/20 text-purple-200 px-4 py-2 rounded-lg border border-purple-500/30">
+                                        <span className="text-sm font-medium">Price Range</span>
+                                        <div className="text-lg font-bold">{esim.price}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="mt-4">
+                                    <p className="text-purple-300 text-sm font-medium mb-3">Data Plans:</p>
+                                    <div className="flex flex-wrap gap-3">
+                                      {esim.dataPlans && esim.dataPlans.map((plan, idx) => (
+                                        <span key={idx} className="text-sm bg-purple-500/20 text-purple-300 px-4 py-2 rounded-full border border-purple-500/30 hover:bg-purple-500/30 transition-colors">
+                                          {plan}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="mt-3">
-                                  <p className="text-purple-300 text-sm font-medium">Data Plans:</p>
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {esim.dataPlans.map((plan, idx) => (
-                                      <span key={idx} className="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30">
-                                        {plan}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                              ))
+                            ) : (
+                              <p className="text-gray-400 text-sm">No eSIM information available</p>
+                            )}
                           </div>
                         </div>
                       </div>
