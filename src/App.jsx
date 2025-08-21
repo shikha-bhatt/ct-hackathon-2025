@@ -22,7 +22,6 @@ function App() {
   // Visa Information State
   const [visaSearch, setVisaSearch] = useState({
     destination: '',
-    nationality: '',
     purpose: ''
   });
 
@@ -98,13 +97,13 @@ function App() {
   };
 
   const handleVisaSearch = async () => {
-    if (!visaSearch.destination.trim() || !visaSearch.nationality.trim() || !visaSearch.purpose.trim()) return;
+    if (!visaSearch.destination.trim() || !visaSearch.purpose.trim()) return;
     
     setLoading(true);
     setError(null);
     
     try {
-      const visaInfo = await travelService.getVisaInformation(visaSearch.destination, visaSearch.nationality, visaSearch.purpose);
+      const visaInfo = await travelService.getVisaInformation(visaSearch.destination, visaSearch.purpose);
       setResults(visaInfo);
     } catch (err) {
       setError('Failed to get visa information. Please try again.');
@@ -447,24 +446,6 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Nationality
-                    </label>
-                    <select
-                      value={visaSearch.nationality}
-                      onChange={(e) => setVisaSearch({...visaSearch, nationality: e.target.value})}
-                      className="input-field"
-                    >
-                      <option value="">Select nationality</option>
-                      <option value="Indian">Indian</option>
-                      <option value="American">American</option>
-                      <option value="British">British</option>
-                      <option value="Japanese">Japanese</option>
-                      <option value="Australian">Australian</option>
-                      {/* Add more nationalities as needed */}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
                       Purpose of Visit
                     </label>
                     <select
@@ -482,7 +463,7 @@ function App() {
                   </div>
                   <button
                     onClick={handleVisaSearch}
-                    disabled={loading || !visaSearch.destination.trim() || !visaSearch.nationality.trim() || !visaSearch.purpose}
+                    disabled={loading || !visaSearch.destination.trim() || !visaSearch.purpose}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
