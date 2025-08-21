@@ -1244,22 +1244,363 @@ function App() {
                   )}
 
                   {/* International Itinerary Results */}
-                  {results.itinerary && (
+                  {results.itinerarySummary && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
                           <Route className="w-4 h-4 text-white" />
                         </div>
                         <h3 className="text-xl font-bold gradient-text">
-                          {results.duration} Itinerary for {results.destination}
+                          International Itinerary for {results.flights?.recommendedAirlines?.[0] || 'your destination'}
                         </h3>
                       </div>
                       
-                      <div className="prose prose-invert max-w-none">
-                        <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                          {results.itinerary}
-                        </pre>
+                      {/* Itinerary Summary */}
+                      <div className="mb-6">
+                        <div className="bg-indigo-900/20 border border-indigo-500/30 rounded-xl p-6">
+                          <h4 className="text-lg font-semibold text-indigo-200 mb-3">Trip Overview</h4>
+                          <p className="text-indigo-300">{results.itinerarySummary}</p>
+                        </div>
                       </div>
+
+                      {/* Destination Info */}
+                      {results.destinationInfo && (
+                        <div className="mb-6">
+                          <div className="bg-purple-900/20 border border-purple-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-purple-200 mb-3">Destination Information</h4>
+                            <p className="text-purple-300">{results.destinationInfo}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Flight Information */}
+                      {results.flights && (
+                        <div className="mb-6">
+                          <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-blue-200 mb-4">Flight Information</h4>
+                            
+                            {/* Flight Options */}
+                            {results.flights.flightOptions && results.flights.flightOptions.length > 0 && (
+                              <div className="space-y-4 mb-6">
+                                <h5 className="font-semibold text-blue-300">Recommended Flights</h5>
+                                {results.flights.flightOptions.map((flight, index) => (
+                                  <div key={index} className="bg-blue-800/30 border border-blue-600/30 rounded-lg p-4">
+                                    <div className="flex justify-between items-start mb-3">
+                                      <div>
+                                        <h6 className="font-semibold text-blue-200">{flight.airline} - {flight.flightNumber}</h6>
+                                        <p className="text-blue-300 text-sm">Duration: {flight.duration}</p>
+                                        <p className="text-blue-300 text-sm">Stops: {flight.stops}</p>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="text-blue-400 font-bold">{flight.price}</p>
+                                        <p className="text-blue-300 text-sm">{flight.departureTime} - {flight.arrivalTime}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Flight Tips */}
+                            {results.flights.bookingTips && (
+                              <div className="bg-blue-800/20 border border-blue-600/20 rounded-lg p-4">
+                                <h5 className="font-semibold text-blue-300 mb-2">Booking Tips</h5>
+                                <p className="text-blue-300 text-sm">{results.flights.bookingTips}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Hotel Information */}
+                      {results.hotels && (
+                        <div className="mb-6">
+                          <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-green-200 mb-4">Hotel Recommendations</h4>
+                            
+                            {results.hotels.recommendedHotels && results.hotels.recommendedHotels.length > 0 && (
+                              <div className="space-y-4 mb-6">
+                                {results.hotels.recommendedHotels.map((hotel, index) => (
+                                  <div key={index} className="bg-green-800/30 border border-green-600/30 rounded-lg p-4">
+                                    <div className="flex justify-between items-start mb-3">
+                                      <div>
+                                        <h6 className="font-semibold text-green-200">{hotel.name}</h6>
+                                        <p className="text-green-300 text-sm">{hotel.area} • ⭐ {hotel.rating}</p>
+                                        <p className="text-green-300 text-sm mt-1">{hotel.description}</p>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="text-green-400 font-bold">{hotel.price}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Amenities */}
+                                    {hotel.amenities && (
+                                      <div className="mb-3">
+                                        <p className="text-green-300 text-sm font-medium mb-2">Amenities:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {hotel.amenities.map((amenity, idx) => (
+                                            <span key={idx} className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full border border-green-500/30">
+                                              {amenity}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Food Options */}
+                                    {hotel.foodOptions && (
+                                      <div>
+                                        <p className="text-green-300 text-sm font-medium mb-2">Food Options:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {hotel.foodOptions.map((food, idx) => (
+                                            <span key={idx} className="text-xs bg-green-600/20 text-green-300 px-2 py-1 rounded-full border border-green-600/30">
+                                              {food}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Hotel Tips */}
+                            {results.hotels.bookingTips && (
+                              <div className="bg-green-800/20 border border-green-600/20 rounded-lg p-4">
+                                <h5 className="font-semibold text-green-300 mb-2">Booking Tips</h5>
+                                <p className="text-green-300 text-sm">{results.hotels.bookingTips}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Activities */}
+                      {results.activities && (
+                        <div className="mb-6">
+                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-yellow-200 mb-4">Activities & Attractions</h4>
+                            
+                            {/* Must Visit Attractions */}
+                            {results.activities.mustVisitAttractions && (
+                              <div className="mb-6">
+                                <h5 className="font-semibold text-yellow-300 mb-3">Must-Visit Attractions</h5>
+                                <div className="space-y-4">
+                                  {results.activities.mustVisitAttractions.map((attraction, index) => (
+                                    <div key={index} className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h6 className="font-semibold text-yellow-200">{attraction.name}</h6>
+                                        <span className="text-yellow-400 font-bold">{attraction.price}</span>
+                                      </div>
+                                      <p className="text-yellow-300 text-sm mb-2">{attraction.description}</p>
+                                      <div className="flex justify-between items-center text-xs text-yellow-400">
+                                        <span>Duration: {attraction.duration}</span>
+                                        <span>Best Time: {attraction.bestTime}</span>
+                                        {attraction.bookingRequired && (
+                                          <span className="bg-yellow-500/20 px-2 py-1 rounded">Booking Required</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Pre-book Activities */}
+                            {results.activities.preBookActivities && (
+                              <div className="mb-6">
+                                <h5 className="font-semibold text-yellow-300 mb-3">Activities Requiring Pre-booking</h5>
+                                <div className="space-y-4">
+                                  {results.activities.preBookActivities.map((activity, index) => (
+                                    <div key={index} className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h6 className="font-semibold text-yellow-200">{activity.name}</h6>
+                                        <span className="text-yellow-400 font-bold">{activity.price}</span>
+                                      </div>
+                                      <p className="text-yellow-300 text-sm mb-2">{activity.description}</p>
+                                      <div className="flex justify-between items-center text-xs text-yellow-400">
+                                        <span>Duration: {activity.duration}</span>
+                                        <span>Best Time: {activity.bestTime}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Free Activities */}
+                            {results.activities.freeActivities && (
+                              <div>
+                                <h5 className="font-semibold text-yellow-300 mb-3">Free Activities</h5>
+                                <div className="space-y-3">
+                                  {results.activities.freeActivities.map((activity, index) => (
+                                    <div key={index} className="bg-yellow-800/20 border border-yellow-600/20 rounded-lg p-3">
+                                      <h6 className="font-semibold text-yellow-200">{activity.name}</h6>
+                                      <p className="text-yellow-300 text-sm">{activity.description}</p>
+                                      <div className="flex justify-between items-center text-xs text-yellow-400 mt-2">
+                                        <span>Duration: {activity.duration}</span>
+                                        <span>Best Time: {activity.bestTime}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Food Recommendations */}
+                      {results.foodRecommendations && (
+                        <div className="mb-6">
+                          <div className="bg-orange-900/20 border border-orange-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-orange-200 mb-4">Food Recommendations</h4>
+                            
+                            {results.foodRecommendations.recommendedRestaurants && (
+                              <div className="space-y-4">
+                                {results.foodRecommendations.recommendedRestaurants.map((restaurant, index) => (
+                                  <div key={index} className="bg-orange-800/30 border border-orange-600/30 rounded-lg p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <div>
+                                        <h6 className="font-semibold text-orange-200">{restaurant.name}</h6>
+                                        <p className="text-orange-300 text-sm">{restaurant.cuisine} • {restaurant.location}</p>
+                                        <p className="text-orange-300 text-sm">⭐ {restaurant.rating}</p>
+                                      </div>
+                                      <span className="text-orange-400 font-bold">{restaurant.priceRange}</span>
+                                    </div>
+                                    
+                                    {/* Specialties */}
+                                    {restaurant.specialties && (
+                                      <div className="mb-2">
+                                        <p className="text-orange-300 text-sm font-medium mb-1">Specialties:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {restaurant.specialties.map((specialty, idx) => (
+                                            <span key={idx} className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full border border-orange-500/30">
+                                              {specialty}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Dietary Options */}
+                                    {restaurant.dietaryOptions && (
+                                      <div>
+                                        <p className="text-orange-300 text-sm font-medium mb-1">Dietary Options:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {restaurant.dietaryOptions.map((option, idx) => (
+                                            <span key={idx} className="text-xs bg-orange-600/20 text-orange-300 px-2 py-1 rounded-full border border-orange-600/30">
+                                              {option}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Transportation */}
+                      {results.transportation && (
+                        <div className="mb-6">
+                          <div className="bg-cyan-900/20 border border-cyan-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-cyan-200 mb-4">Transportation</h4>
+                            
+                            <div className="space-y-4">
+                              {results.transportation.airportTransfer && (
+                                <div>
+                                  <h5 className="font-semibold text-cyan-300 mb-2">Airport Transfer</h5>
+                                  <p className="text-cyan-300 text-sm">{results.transportation.airportTransfer}</p>
+                                </div>
+                              )}
+
+                              {results.transportation.localTransport && (
+                                <div>
+                                  <h5 className="font-semibold text-cyan-300 mb-2">Local Transport</h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    {results.transportation.localTransport.map((transport, idx) => (
+                                      <span key={idx} className="text-sm bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full border border-cyan-500/30">
+                                        {transport}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {results.transportation.transportationTips && (
+                                <div className="bg-cyan-800/20 border border-cyan-600/20 rounded-lg p-3">
+                                  <h5 className="font-semibold text-cyan-300 mb-2">Transportation Tips</h5>
+                                  <p className="text-cyan-300 text-sm">{results.transportation.transportationTips}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Travel Tips */}
+                      {results.travelTips && (
+                        <div className="mb-6">
+                          <div className="bg-pink-900/20 border border-pink-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-pink-200 mb-3">Travel Tips</h4>
+                            <p className="text-pink-300">{results.travelTips}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Weather & Currency Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        {results.weatherInfo && (
+                          <div className="bg-sky-900/20 border border-sky-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-sky-200 mb-3">Weather Information</h4>
+                            <p className="text-sky-300">{results.weatherInfo}</p>
+                          </div>
+                        )}
+
+                        {results.currencyInfo && (
+                          <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-emerald-200 mb-3">Currency Information</h4>
+                            <p className="text-emerald-300">{results.currencyInfo}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Emergency Contacts */}
+                      {results.emergencyContacts && (
+                        <div className="mb-6">
+                          <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-red-200 mb-3">Emergency Contacts</h4>
+                            <p className="text-red-300">{results.emergencyContacts}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Booking Links */}
+                      {results.bookingLinks && (
+                        <div>
+                          <div className="bg-violet-900/20 border border-violet-500/30 rounded-xl p-6">
+                            <h4 className="text-lg font-semibold text-violet-200 mb-4">Booking Links</h4>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                              {Object.entries(results.bookingLinks).map(([key, url]) => (
+                                <a
+                                  key={key}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 px-4 py-2 rounded-lg text-center text-sm font-medium border border-violet-500/30 transition-colors"
+                                >
+                                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
