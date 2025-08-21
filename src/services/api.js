@@ -2,16 +2,16 @@ import axios from 'axios';
 
 // API Configuration - Real CT Hackathon 2025 Keys
 const AZURE_CONFIG = {
-  endpoint: process.env.VITE_AZURE_ENDPOINT,
-  apiKey: process.env.VITE_AZURE_API_KEY,
-  deployment: process.env.VITE_AZURE_DEPLOYMENT,
-  apiVersion: process.env.VITE_AZURE_API_VERSION
+  endpoint: import.meta.env.VITE_AZURE_ENDPOINT,
+  apiKey: import.meta.env.VITE_AZURE_API_KEY,
+  deployment: import.meta.env.VITE_AZURE_DEPLOYMENT,
+  apiVersion: import.meta.env.VITE_AZURE_API_VERSION
 };
 
 const CLEARTRIP_CONFIG = {
-  hostname: process.env.VITE_CLEARTRIP_HOSTNAME,
-  apiKey: process.env.VITE_CLEARTRIP_API_KEY,
-  daAccount: process.env.VITE_CLEARTRIP_DA_ACCOUNT
+  hostname: import.meta.env.VITE_CLEARTRIP_HOSTNAME,
+  apiKey: import.meta.env.VITE_CLEARTRIP_API_KEY,
+  daAccount: import.meta.env.VITE_CLEARTRIP_DA_ACCOUNT
 };
 
 // Azure OpenAI API Service
