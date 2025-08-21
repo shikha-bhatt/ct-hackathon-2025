@@ -10,6 +10,10 @@ public class AzureOpenAIResponse {
     private String model;
     private List<Choice> choices;
     private Usage usage;
+    @JsonProperty("prompt_filter_results")
+    private Object promptFilterResults;
+    @JsonProperty("system_fingerprint")
+    private String systemFingerprint;
     
     public String getId() {
         return id;
@@ -58,12 +62,32 @@ public class AzureOpenAIResponse {
     public void setUsage(Usage usage) {
         this.usage = usage;
     }
+
+    public Object getPromptFilterResults() {
+        return promptFilterResults;
+    }
+
+    public void setPromptFilterResults(Object promptFilterResults) {
+        this.promptFilterResults = promptFilterResults;
+    }
+
+    public String getSystemFingerprint() {
+        return systemFingerprint;
+    }
+
+    public void setSystemFingerprint(String systemFingerprint) {
+        this.systemFingerprint = systemFingerprint;
+    }
     
     public static class Choice {
         private Integer index;
         private Message message;
         @JsonProperty("finish_reason")
         private String finishReason;
+        @JsonProperty("content_filter_results")
+        private Object contentFilterResults;
+        @JsonProperty("logprobs")
+        private Object logprobs;
 
         public Integer getIndex() {
             return index;
@@ -88,11 +112,31 @@ public class AzureOpenAIResponse {
         public void setFinishReason(String finishReason) {
             this.finishReason = finishReason;
         }
+
+        public Object getContentFilterResults() {
+            return contentFilterResults;
+        }
+
+        public void setContentFilterResults(Object contentFilterResults) {
+            this.contentFilterResults = contentFilterResults;
+        }
+
+        public Object getLogprobs() {
+            return logprobs;
+        }
+
+        public void setLogprobs(Object logprobs) {
+            this.logprobs = logprobs;
+        }
     }
     
     public static class Message {
         private String role;
         private String content;
+        @JsonProperty("annotations")
+        private Object annotations;
+        @JsonProperty("refusal")
+        private Object refusal;
 
         public String getRole() {
             return role;
@@ -109,6 +153,22 @@ public class AzureOpenAIResponse {
         public void setContent(String content) {
             this.content = content;
         }
+
+        public Object getAnnotations() {
+            return annotations;
+        }
+
+        public void setAnnotations(Object annotations) {
+            this.annotations = annotations;
+        }
+
+        public Object getRefusal() {
+            return refusal;
+        }
+
+        public void setRefusal(Object refusal) {
+            this.refusal = refusal;
+        }
     }
     
     public static class Usage {
@@ -118,6 +178,10 @@ public class AzureOpenAIResponse {
         private Integer completionTokens;
         @JsonProperty("total_tokens")
         private Integer totalTokens;
+        @JsonProperty("completion_tokens_details")
+        private Object completionTokensDetails;
+        @JsonProperty("prompt_tokens_details")
+        private Object promptTokensDetails;
 
         public Integer getPromptTokens() {
             return promptTokens;
@@ -141,6 +205,22 @@ public class AzureOpenAIResponse {
 
         public void setTotalTokens(Integer totalTokens) {
             this.totalTokens = totalTokens;
+        }
+
+        public Object getCompletionTokensDetails() {
+            return completionTokensDetails;
+        }
+
+        public void setCompletionTokensDetails(Object completionTokensDetails) {
+            this.completionTokensDetails = completionTokensDetails;
+        }
+
+        public Object getPromptTokensDetails() {
+            return promptTokensDetails;
+        }
+
+        public void setPromptTokensDetails(Object promptTokensDetails) {
+            this.promptTokensDetails = promptTokensDetails;
         }
     }
 } 

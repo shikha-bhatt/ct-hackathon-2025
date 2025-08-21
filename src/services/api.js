@@ -966,6 +966,165 @@ numberOfStops === 1 ? `
       });
     }
   }
+
+  async getInternationalItinerary(request) {
+    try {
+      console.log('🔍 Fetching international itinerary from Spring Boot backend...');
+      console.log('Request:', request);
+      
+      const response = await axios.post(`${BACKEND_CONFIG.baseURL}/itinerary/international`, request);
+      
+      console.log('✅ International itinerary received from backend:', response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('❌ Error fetching international itinerary from backend:', error);
+      
+      // Fallback to mock data if backend is not available
+      console.log('🔄 Falling back to mock data...');
+      return this.getMockInternationalItinerary(request);
+    }
+  }
+
+  getMockInternationalItinerary(request) {
+    console.log('🎭 Using mock international itinerary data for:', request.destination);
+    
+    return {
+      itinerarySummary: `Comprehensive ${request.duration}-day itinerary for ${request.destination} from ${request.origin}`,
+      destinationInfo: `${request.destination} is a beautiful destination with rich culture, history, and modern amenities.`,
+      flights: {
+        recommendedAirlines: ["Emirates", "Qatar Airways", "Lufthansa"],
+        flightOptions: [
+          {
+            airline: "Emirates",
+            flightNumber: "EK123",
+            departureTime: "2:30 AM",
+            arrivalTime: "5:00 PM",
+            duration: "14h 30m",
+            price: "$1,200",
+            stops: "1 stop"
+          },
+          {
+            airline: "Qatar Airways",
+            flightNumber: "QR456",
+            departureTime: "8:45 AM",
+            arrivalTime: "11:15 PM",
+            duration: "16h 15m",
+            price: "$1,150",
+            stops: "1 stop"
+          }
+        ],
+        bookingTips: "Book 3-6 months in advance for best prices",
+        averagePrice: "$1,200-1,500",
+        flightDuration: "14-16 hours"
+      },
+      hotels: {
+        recommendedHotels: [
+          {
+            name: "Luxury Hotel",
+            area: "City Center",
+            rating: "4.5/5",
+            price: "$200-300/night",
+            amenities: ["WiFi", "Restaurant", "Spa", "Pool"],
+            description: "Luxury hotel in the heart of the city",
+            foodOptions: ["International", "Local", "Vegetarian"]
+          },
+          {
+            name: "Boutique Hotel",
+            area: "Historic District",
+            rating: "4.2/5",
+            price: "$150-200/night",
+            amenities: ["WiFi", "Restaurant", "Garden"],
+            description: "Charming boutique hotel in historic area",
+            foodOptions: ["Local", "Vegetarian", "Vegan"]
+          }
+        ],
+        hotelAreas: ["City Center", "Historic District", "Business District"],
+        averagePrice: "$150-300/night",
+        bookingTips: "Book early, especially during peak season",
+        amenities: ["WiFi", "Restaurant", "24/7 Front Desk"]
+      },
+      activities: {
+        mustVisitAttractions: [
+          {
+            name: "Historic Landmark",
+            description: "Famous historical site",
+            duration: "2-3 hours",
+            price: "$20",
+            bookingRequired: true,
+            bookingLink: "https://example.com/book",
+            bestTime: "Morning",
+            location: "City Center"
+          }
+        ],
+        preBookActivities: [
+          {
+            name: "Guided City Tour",
+            description: "Comprehensive city tour with guide",
+            duration: "4 hours",
+            price: "$50",
+            bookingRequired: true,
+            bookingLink: "https://example.com/tour",
+            bestTime: "Morning",
+            location: "Various locations"
+          }
+        ],
+        freeActivities: [
+          {
+            name: "City Park Walk",
+            description: "Beautiful city park",
+            duration: "1-2 hours",
+            price: "Free",
+            bookingRequired: false,
+            bookingLink: "",
+            bestTime: "Evening",
+            location: "City Park"
+          }
+        ],
+        activityTips: "Book popular activities in advance"
+      },
+      foodRecommendations: {
+        localCuisine: "Rich and diverse local cuisine",
+        recommendedRestaurants: [
+          {
+            name: "Local Restaurant",
+            cuisine: "Local",
+            location: "City Center",
+            priceRange: "$20-40",
+            rating: "4.3/5",
+            specialties: ["Local Dish 1", "Local Dish 2"],
+            dietaryOptions: ["Vegetarian", "Vegan"],
+            reservationRequired: true
+          }
+        ],
+        foodPreferences: "Based on your preferences",
+        dietaryOptions: ["Vegetarian", "Vegan", "Halal", "Kosher"],
+        foodSafetyTips: "Eat at reputable restaurants",
+        mustTryDishes: ["Local Dish 1", "Local Dish 2"]
+      },
+      transportation: {
+        airportTransfer: "Taxi, shuttle, or public transport",
+        localTransport: ["Metro", "Bus", "Taxi"],
+        transportationTips: "Get a travel pass for convenience",
+        publicTransport: "Efficient and affordable",
+        carRental: "Available but not recommended in city center"
+      },
+      bookingLinks: {
+        cleartripFlights: "https://www.cleartrip.com/flights",
+        cleartripHotels: "https://www.cleartrip.com/hotels",
+        trippy: "https://www.trippy.com",
+        bookingCom: "https://www.booking.com",
+        agoda: "https://www.agoda.com",
+        airbnb: "https://www.airbnb.com",
+        viator: "https://www.viator.com",
+        getYourGuide: "https://www.getyourguide.com"
+      },
+      travelTips: "General travel tips for the destination",
+      weatherInfo: "Check weather before travel",
+      currencyInfo: "Local currency information",
+      emergencyContacts: "Emergency contact numbers"
+    };
+  }
 }
 
 // Export instances for easy use

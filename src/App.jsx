@@ -34,10 +34,8 @@ function App() {
   const [itinerarySearch, setItinerarySearch] = useState({
     destination: '',
     duration: '',
-    interests: '',
     startDate: '',
-    endDate: '',
-    origin: ''
+    endDate: ''
   });
 
   // Forex Information State
@@ -233,7 +231,20 @@ function App() {
     setError(null);
     
     try {
-      const itinerary = await travelService.getInternationalItinerary(itinerarySearch.origin, itinerarySearch.destination, itinerarySearch.duration, itinerarySearch.interests);
+      // Create request object for the new API
+      const request = {
+        origin: 'India',
+        destination: itinerarySearch.destination,
+        startDate: itinerarySearch.startDate || new Date().toISOString().split('T')[0],
+        endDate: itinerarySearch.endDate || new Date(Date.now() + parseInt(itinerarySearch.duration) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        duration: parseInt(itinerarySearch.duration),
+        foodPreferences: 'Vegetarian, Local cuisine',
+        budget: 'Mid-range',
+        travelStyle: 'Leisure',
+        groupSize: 2
+      };
+      
+      const itinerary = await travelService.getInternationalItinerary(request);
       setResults(itinerary);
     } catch (err) {
       setError('Failed to generate itinerary. Please try again.');
@@ -606,24 +617,7 @@ function App() {
                     </div>
                     <h3 className="text-xl font-bold gradient-text">International Itinerary</h3>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Origin Country
-                    </label>
-                    <select
-                      value={itinerarySearch.origin}
-                      onChange={(e) => setItinerarySearch({...itinerarySearch, origin: e.target.value})}
-                      className="input-field"
-                    >
-                      <option value="">Select a country</option>
-                      <option value="USA">USA</option>
-                      <option value="UK">UK</option>
-                      <option value="Japan">Japan</option>
-                      <option value="India">India</option>
-                      <option value="Australia">Australia</option>
-                      {/* Add more countries as needed */}
-                    </select>
-                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Destination Country
@@ -644,15 +638,20 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Interests (Optional)
+                      Duration
                     </label>
-                    <textarea
-                      value={itinerarySearch.interests}
-                      onChange={(e) => setItinerarySearch({...itinerarySearch, interests: e.target.value})}
-                      placeholder="e.g., History, Food, Adventure, Culture, Shopping"
+                    <select
+                      value={itinerarySearch.duration}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, duration: e.target.value})}
                       className="input-field"
-                      rows="3"
-                    />
+                    >
+                      <option value="">Select duration</option>
+                      <option value="3 days">3 days</option>
+                      <option value="5 days">5 days</option>
+                      <option value="7 days">7 days</option>
+                      <option value="10 days">10 days</option>
+                      <option value="14 days">14 days</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -676,7 +675,7 @@ function App() {
                   </div>
                   <button
                     onClick={handleItinerarySearch}
-                    disabled={loading || !itinerarySearch.origin.trim() || !itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()}
+                    disabled={loading || !itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
