@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plane, Hotel, MapPin, Sparkles, MessageCircle, Zap, Globe, Star, Image, Video, FileText, Palette, Play, Video as VideoIcon } from 'lucide-react';
+import { Search, Plane, Hotel, MapPin, Sparkles, MessageCircle, Zap, Globe, Star, Image, Video, FileText, Palette, Play, Video as VideoIcon, Smartphone, FileCheck, Shield, Route, DollarSign, CreditCard } from 'lucide-react';
 import { travelService } from './services/api';
 
 function App() {
@@ -11,33 +11,44 @@ function App() {
   // AI Assistant State
   const [destination, setDestination] = useState('');
   const [preferences, setPreferences] = useState('');
-  const [chatQuery, setChatQuery] = useState('');
 
-  // Hotel Search State
-  const [hotelSearch, setHotelSearch] = useState({
-    location: '',
-    checkIn: '',
-    checkOut: '',
-    rooms: 1,
-    adults: 1
+  // SIM Information State
+  const [simSearch, setSimSearch] = useState({
+    destination: '',
+    duration: ''
   });
 
-  // Flight Search State
-  const [flightSearch, setFlightSearch] = useState({
-    from: '',
-    to: '',
-    departureDate: '',
-    returnDate: '',
-    adults: 1,
-    cabinClass: 'Economy'
+  // Visa Information State
+  const [visaSearch, setVisaSearch] = useState({
+    destination: '',
+    nationality: '',
+    purpose: ''
   });
 
-  // Content Creator State
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [selectedImages, setSelectedImages] = useState([]);
-  const [contentType, setContentType] = useState('blog');
-  const [contentPrompt, setContentPrompt] = useState('');
-  const [generatedContent, setGeneratedContent] = useState(null);
+  // Insurance Information State
+  const [insuranceSearch, setInsuranceSearch] = useState({
+    destination: '',
+    tripType: '',
+    duration: ''
+  });
+
+  // International Itinerary State
+  const [itinerarySearch, setItinerarySearch] = useState({
+    destination: '',
+    duration: '',
+    interests: ''
+  });
+
+  // Forex Information State
+  const [forexSearch, setForexSearch] = useState({
+    destination: '',
+    amount: ''
+  });
+
+  // Zero Forex Cards State
+  const [zeroForexSearch, setZeroForexSearch] = useState({
+    destination: ''
+  });
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
@@ -63,241 +74,106 @@ function App() {
     }
   };
 
-  const handleNaturalLanguageSearch = async () => {
-    if (!chatQuery.trim()) return;
+  const handleSIMSearch = async () => {
+    if (!simSearch.destination.trim() || !simSearch.duration.trim()) return;
     
     setLoading(true);
     setError(null);
     
     try {
-      const searchResults = await travelService.naturalLanguageSearch(chatQuery);
-      setResults(searchResults);
+      const simInfo = await travelService.getSIMInformation(simSearch.destination, simSearch.duration);
+      setResults(simInfo);
     } catch (err) {
-      setError('Failed to process your query. Please try again.');
+      setError('Failed to get SIM information. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleHotelSearch = async () => {
+  const handleVisaSearch = async () => {
+    if (!visaSearch.destination.trim() || !visaSearch.nationality.trim() || !visaSearch.purpose.trim()) return;
+    
     setLoading(true);
     setError(null);
     
     try {
-      const availableLocations = travelService.hotels.getAvailableLocations();
-      const location = availableLocations.find(loc => 
-        loc.name.toLowerCase().includes(hotelSearch.location.toLowerCase())
-      );
-      
-      if (!location) {
-        setError('Location not available. Try Lucknow or Hyderabad.');
-        setLoading(false);
-        return;
-      }
-      
-      const hotelResults = await travelService.hotels.searchHotels({
-        locationId: location.id,
-        checkIn: hotelSearch.checkIn,
-        checkOut: hotelSearch.checkOut,
-        rooms: hotelSearch.rooms,
-        adults: hotelSearch.adults
-      });
-      
-      setResults({ hotels: hotelResults });
+      const visaInfo = await travelService.getVisaInformation(visaSearch.destination, visaSearch.nationality, visaSearch.purpose);
+      setResults(visaInfo);
     } catch (err) {
-      setError('Failed to search hotels. Please try again.');
+      setError('Failed to get visa information. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFlightSearch = async () => {
+  const handleInsuranceSearch = async () => {
+    if (!insuranceSearch.destination.trim() || !insuranceSearch.tripType.trim() || !insuranceSearch.duration.trim()) return;
+    
     setLoading(true);
     setError(null);
     
     try {
-      const flightResults = await travelService.flights.searchFlights(flightSearch);
-      setResults({ flights: flightResults });
+      const insuranceInfo = await travelService.getInsuranceInformation(insuranceSearch.destination, insuranceSearch.tripType, insuranceSearch.duration);
+      setResults(insuranceInfo);
     } catch (err) {
-      setError('Failed to search flights. Please try again.');
+      setError('Failed to get insurance information. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Content Creator Functions
-  const handleImageUpload = (event) => {
-    console.log('File upload triggered');
-    console.log('Files selected:', event.target.files);
+  const handleItinerarySearch = async () => {
+    if (!itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()) return;
     
-    const files = Array.from(event.target.files);
-    console.log('Files array:', files);
-    
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    console.log('Image files:', imageFiles);
-    
-    if (imageFiles.length === 0) {
-      setError('Please select valid image files (JPG, PNG, GIF, etc.).');
-      console.log('No valid image files found');
-      return;
-    }
-
-    // Check file size (10MB limit)
-    const validFiles = imageFiles.filter(file => file.size <= 10 * 1024 * 1024);
-    if (validFiles.length !== imageFiles.length) {
-      setError('Some files were too large. Maximum size is 10MB per image.');
-    }
-
-    const newImages = validFiles.map(file => ({
-      id: Date.now() + Math.random(),
-      file: file,
-      url: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size
-    }));
-
-    console.log('New images to add:', newImages);
-    setUploadedImages(prev => [...prev, ...newImages]);
-    setError(null);
-    
-    // Clear the input value to allow re-uploading the same file
-    event.target.value = '';
-  };
-
-  const openFilePicker = () => {
-    const fileInput = document.getElementById('image-upload');
-    if (fileInput) {
-      fileInput.click();
-    }
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-    event.currentTarget.classList.add('border-purple-500', 'bg-purple-500/10');
-  };
-
-  const handleDragLeave = (event) => {
-    event.preventDefault();
-    event.currentTarget.classList.remove('border-purple-500', 'bg-purple-500/10');
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    event.currentTarget.classList.remove('border-purple-500', 'bg-purple-500/10');
-    
-    const files = Array.from(event.dataTransfer.files);
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    
-    if (imageFiles.length === 0) {
-      setError('Please drop valid image files (JPG, PNG, GIF, etc.).');
-      return;
-    }
-
-    // Check file size (10MB limit)
-    const validFiles = imageFiles.filter(file => file.size <= 10 * 1024 * 1024);
-    if (validFiles.length !== imageFiles.length) {
-      setError('Some files were too large. Maximum size is 10MB per image.');
-    }
-
-    const newImages = validFiles.map(file => ({
-      id: Date.now() + Math.random(),
-      file: file,
-      url: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size
-    }));
-
-    setUploadedImages(prev => [...prev, ...newImages]);
-    setError(null);
-  };
-
-  const handleImageSelect = (imageId) => {
-    setSelectedImages(prev => {
-      if (prev.includes(imageId)) {
-        return prev.filter(id => id !== imageId);
-      } else {
-        return [...prev, imageId];
-      }
-    });
-  };
-
-  const handleContentGeneration = async () => {
-    console.log('🎯 handleContentGeneration called!');
-    console.log('Selected images:', selectedImages);
-    console.log('Content type:', contentType);
-    console.log('Content prompt:', contentPrompt);
-    
-    if (selectedImages.length < 2) {
-      console.log('❌ Not enough images selected');
-      setError('Please select at least 2 images for content generation.');
-      return;
-    }
-
-    console.log('✅ Starting content generation...');
     setLoading(true);
     setError(null);
-
+    
     try {
-      const selectedImageData = uploadedImages.filter(img => selectedImages.includes(img.id));
-      const imageNames = selectedImageData.map(img => img.name).join(', ');
-      
-      console.log('Selected image data:', selectedImageData);
-      console.log('Image names:', imageNames);
-      
-      let prompt = '';
-      switch (contentType) {
-        case 'blog':
-          prompt = `Create a travel blog post based on these images: ${imageNames}. ${contentPrompt ? `Additional context: ${contentPrompt}` : ''} Include a compelling title, introduction, detailed descriptions, travel tips, and a conclusion.`;
-          break;
-        case 'video-script':
-          prompt = `Create a video script for a travel vlog based on these images: ${imageNames}. ${contentPrompt ? `Additional context: ${contentPrompt}` : ''} Include an engaging intro, scene descriptions, narration script, and call-to-action.`;
-          break;
-        case 'collage':
-          prompt = `Create a creative collage concept and layout description based on these images: ${imageNames}. ${contentPrompt ? `Additional context: ${contentPrompt}` : ''} Describe the arrangement, theme, and visual story.`;
-          break;
-        case 'video':
-          prompt = `Create a video concept and storyboard based on these images: ${imageNames}. ${contentPrompt ? `Additional context: ${contentPrompt}` : ''} Include scene transitions, music suggestions, and visual effects.`;
-          break;
-      }
-
-      console.log('Generated prompt:', prompt);
-      console.log('Calling OpenAI API...');
-
-      const aiResponse = await travelService.openAI.chatCompletion([
-        {
-          role: 'system',
-          content: 'You are a creative travel content creator. Generate engaging, detailed content based on travel images provided by users.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]);
-
-      console.log('✅ AI Response received:', aiResponse);
-
-      setGeneratedContent({
-        type: contentType,
-        content: aiResponse,
-        images: selectedImageData
-      });
-      
-      console.log('✅ Generated content set successfully');
+      const itinerary = await travelService.getInternationalItinerary(itinerarySearch.destination, itinerarySearch.duration, itinerarySearch.interests);
+      setResults(itinerary);
     } catch (err) {
-      console.error('❌ Error in content generation:', err);
-      setError('Failed to generate content. Please try again.');
+      setError('Failed to generate itinerary. Please try again.');
+      console.error(err);
     } finally {
       setLoading(false);
-      console.log('🏁 Content generation completed');
     }
   };
 
-  const removeImage = (imageId) => {
-    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
-    setSelectedImages(prev => prev.filter(id => id !== imageId));
+  const handleForexSearch = async () => {
+    if (!forexSearch.destination.trim() || !forexSearch.amount.trim()) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const forexInfo = await travelService.getForexInformation(forexSearch.destination, forexSearch.amount);
+      setResults(forexInfo);
+    } catch (err) {
+      setError('Failed to get forex information. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleZeroForexSearch = async () => {
+    if (!zeroForexSearch.destination.trim()) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const zeroForexInfo = await travelService.getZeroForexCards(zeroForexSearch.destination);
+      setResults(zeroForexInfo);
+    } catch (err) {
+      setError('Failed to get zero-forex cards information. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -346,10 +222,12 @@ function App() {
           <div className="flex space-x-1">
             {[
               { id: 'ai-assistant', label: 'AI Travel Assistant', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
-              { id: 'hotels', label: 'Hotels', icon: Hotel, color: 'from-blue-500 to-cyan-500' },
-              { id: 'flights', label: 'Flights', icon: Plane, color: 'from-green-500 to-emerald-500' },
-              { id: 'chat', label: 'Natural Language Search', icon: MessageCircle, color: 'from-orange-500 to-red-500' },
-              { id: 'content-creator', label: 'Content Creator', icon: Image, color: 'from-indigo-500 to-purple-500' }
+              { id: 'sim-info', label: 'SIM Information', icon: Smartphone, color: 'from-blue-500 to-cyan-500' },
+              { id: 'visa-info', label: 'Visa Information', icon: FileCheck, color: 'from-green-500 to-emerald-500' },
+              { id: 'insurance-info', label: 'Insurance Information', icon: Shield, color: 'from-orange-500 to-red-500' },
+              { id: 'itinerary', label: 'International Itinerary', icon: Route, color: 'from-indigo-500 to-purple-500' },
+              { id: 'forex', label: 'Forex Exchange', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
+              { id: 'zero-forex', label: 'Zero-Forex Cards', icon: CreditCard, color: 'from-teal-500 to-green-500' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -469,402 +347,349 @@ function App() {
                 </div>
               )}
 
-              {activeTab === 'hotels' && (
+              {activeTab === 'sim-info' && (
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                      <Hotel className="w-5 h-5 text-white" />
+                      <Smartphone className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold gradient-text">Hotel Search</h3>
+                    <h3 className="text-xl font-bold gradient-text">SIM Information</h3>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Location
+                      Destination
                     </label>
                     <input
                       type="text"
-                      value={hotelSearch.location}
-                      onChange={(e) => setHotelSearch({...hotelSearch, location: e.target.value})}
-                      placeholder="Lucknow or Hyderabad"
+                      value={simSearch.destination}
+                      onChange={(e) => setSimSearch({...simSearch, destination: e.target.value})}
+                      placeholder="e.g., USA, UK, Japan"
                       className="input-field"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Check-in
-                      </label>
-                      <input
-                        type="date"
-                        value={hotelSearch.checkIn}
-                        onChange={(e) => setHotelSearch({...hotelSearch, checkIn: e.target.value})}
-                        className="input-field"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Check-out
-                      </label>
-                      <input
-                        type="date"
-                        value={hotelSearch.checkOut}
-                        onChange={(e) => setHotelSearch({...hotelSearch, checkOut: e.target.value})}
-                        className="input-field"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Rooms
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={hotelSearch.rooms}
-                        onChange={(e) => setHotelSearch({...hotelSearch, rooms: parseInt(e.target.value)})}
-                        className="input-field"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Adults
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={hotelSearch.adults}
-                        onChange={(e) => setHotelSearch({...hotelSearch, adults: parseInt(e.target.value)})}
-                        className="input-field"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Trip Duration
+                    </label>
+                    <input
+                      type="text"
+                      value={simSearch.duration}
+                      onChange={(e) => setSimSearch({...simSearch, duration: e.target.value})}
+                      placeholder="e.g., 7 days, 2 weeks"
+                      className="input-field"
+                    />
                   </div>
                   <button
-                    onClick={handleHotelSearch}
-                    disabled={loading}
+                    onClick={handleSIMSearch}
+                    disabled={loading || !simSearch.destination.trim() || !simSearch.duration.trim()}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Searching Hotels...</span>
+                        <span>Getting SIM Information...</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center space-x-2">
-                        <Hotel className="w-5 h-5" />
-                        <span>Search Hotels</span>
+                        <Smartphone className="w-5 h-5" />
+                        <span>Get SIM Information</span>
                       </div>
                     )}
                   </button>
                 </div>
               )}
 
-              {activeTab === 'flights' && (
+              {activeTab === 'visa-info' && (
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                      <Plane className="w-5 h-5 text-white" />
+                      <FileCheck className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold gradient-text">Flight Search</h3>
+                    <h3 className="text-xl font-bold gradient-text">Visa Information</h3>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      From
+                      Destination
                     </label>
                     <input
                       type="text"
-                      value={flightSearch.from}
-                      onChange={(e) => setFlightSearch({...flightSearch, from: e.target.value})}
-                      placeholder="Airport code or city"
+                      value={visaSearch.destination}
+                      onChange={(e) => setVisaSearch({...visaSearch, destination: e.target.value})}
+                      placeholder="e.g., USA, UK, Australia"
                       className="input-field"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      To
+                      Nationality
                     </label>
                     <input
                       type="text"
-                      value={flightSearch.to}
-                      onChange={(e) => setFlightSearch({...flightSearch, to: e.target.value})}
-                      placeholder="Airport code or city"
+                      value={visaSearch.nationality}
+                      onChange={(e) => setVisaSearch({...visaSearch, nationality: e.target.value})}
+                      placeholder="e.g., Indian, American"
                       className="input-field"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Departure
-                      </label>
-                      <input
-                        type="date"
-                        value={flightSearch.departureDate}
-                        onChange={(e) => setFlightSearch({...flightSearch, departureDate: e.target.value})}
-                        className="input-field"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Return
-                      </label>
-                      <input
-                        type="date"
-                        value={flightSearch.returnDate}
-                        onChange={(e) => setFlightSearch({...flightSearch, returnDate: e.target.value})}
-                        className="input-field"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Adults
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={flightSearch.adults}
-                        onChange={(e) => setFlightSearch({...flightSearch, adults: parseInt(e.target.value)})}
-                        className="input-field"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Cabin Class
-                      </label>
-                      <select
-                        value={flightSearch.cabinClass}
-                        onChange={(e) => setFlightSearch({...flightSearch, cabinClass: e.target.value})}
-                        className="input-field"
-                      >
-                        <option value="Economy">Economy</option>
-                        <option value="Premium Economy">Premium Economy</option>
-                        <option value="Business">Business</option>
-                        <option value="First">First</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Purpose of Visit
+                    </label>
+                    <select
+                      value={visaSearch.purpose}
+                      onChange={(e) => setVisaSearch({...visaSearch, purpose: e.target.value})}
+                      className="input-field"
+                    >
+                      <option value="">Select purpose</option>
+                      <option value="Tourism">Tourism</option>
+                      <option value="Business">Business</option>
+                      <option value="Study">Study</option>
+                      <option value="Work">Work</option>
+                      <option value="Family Visit">Family Visit</option>
+                    </select>
                   </div>
                   <button
-                    onClick={handleFlightSearch}
-                    disabled={loading}
+                    onClick={handleVisaSearch}
+                    disabled={loading || !visaSearch.destination.trim() || !visaSearch.nationality.trim() || !visaSearch.purpose}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Searching Flights...</span>
+                        <span>Getting Visa Information...</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center space-x-2">
-                        <Plane className="w-5 h-5" />
-                        <span>Search Flights</span>
+                        <FileCheck className="w-5 h-5" />
+                        <span>Get Visa Information</span>
                       </div>
                     )}
                   </button>
                 </div>
               )}
 
-              {activeTab === 'chat' && (
+              {activeTab === 'insurance-info' && (
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-white" />
+                      <Shield className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold gradient-text">Natural Language Search</h3>
+                    <h3 className="text-xl font-bold gradient-text">Insurance Information</h3>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Ask anything about travel
+                      Destination
                     </label>
-                    <textarea
-                      value={chatQuery}
-                      onChange={(e) => setChatQuery(e.target.value)}
-                      placeholder="e.g., I need a hotel in Lucknow for next weekend, or Show me flights from Delhi to Mumbai"
+                    <input
+                      type="text"
+                      value={insuranceSearch.destination}
+                      onChange={(e) => setInsuranceSearch({...insuranceSearch, destination: e.target.value})}
+                      placeholder="e.g., USA, Europe, Asia"
                       className="input-field"
-                      rows="4"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Trip Type
+                    </label>
+                    <select
+                      value={insuranceSearch.tripType}
+                      onChange={(e) => setInsuranceSearch({...insuranceSearch, tripType: e.target.value})}
+                      className="input-field"
+                    >
+                      <option value="">Select trip type</option>
+                      <option value="Leisure">Leisure</option>
+                      <option value="Business">Business</option>
+                      <option value="Adventure">Adventure</option>
+                      <option value="Family">Family</option>
+                      <option value="Solo">Solo</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Trip Duration
+                    </label>
+                    <input
+                      type="text"
+                      value={insuranceSearch.duration}
+                      onChange={(e) => setInsuranceSearch({...insuranceSearch, duration: e.target.value})}
+                      placeholder="e.g., 7 days, 2 weeks, 1 month"
+                      className="input-field"
                     />
                   </div>
                   <button
-                    onClick={handleNaturalLanguageSearch}
-                    disabled={loading || !chatQuery.trim()}
+                    onClick={handleInsuranceSearch}
+                    disabled={loading || !insuranceSearch.destination.trim() || !insuranceSearch.tripType || !insuranceSearch.duration.trim()}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Processing...</span>
+                        <span>Getting Insurance Information...</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center space-x-2">
-                        <MessageCircle className="w-5 h-5" />
-                        <span>Ask AI Assistant</span>
+                        <Shield className="w-5 h-5" />
+                        <span>Get Insurance Information</span>
                       </div>
                     )}
                   </button>
                 </div>
               )}
 
-              {activeTab === 'content-creator' && (
+              {activeTab === 'itinerary' && (
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                      <Image className="w-5 h-5 text-white" />
+                      <Route className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold gradient-text">Travel Content Creator</h3>
+                    <h3 className="text-xl font-bold gradient-text">International Itinerary</h3>
                   </div>
-                  
-                  {/* Image Upload */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Upload Travel Images
+                      Destination
                     </label>
-                    <div 
-                      className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center hover:border-purple-500 transition-colors"
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                    >
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        id="image-upload"
-                      />
-                      <div className="mb-4">
-                        <Image className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-400 mb-2 font-medium">Click to browse images or drag & drop</p>
-                        <p className="text-sm text-gray-500 mb-4">Supports: JPG, PNG, GIF, WebP (max 10MB each)</p>
-                        <button
-                          type="button"
-                          onClick={openFilePicker}
-                          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
-                        >
-                          <Image className="w-5 h-5 mr-2" />
-                          Choose Images
-                        </button>
-                      </div>
-                    </div>
-                    {uploadedImages.length === 0 && (
-                      <p className="text-xs text-gray-500 mt-2 text-center">
-                        Select at least 2 images to generate content
-                      </p>
-                    )}
+                    <input
+                      type="text"
+                      value={itinerarySearch.destination}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, destination: e.target.value})}
+                      placeholder="e.g., Paris, Tokyo, New York"
+                      className="input-field"
+                    />
                   </div>
-
-                  {/* Uploaded Images */}
-                  {uploadedImages.length > 0 && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Uploaded Images ({uploadedImages.length})
-                      </label>
-                      <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto">
-                        {uploadedImages.map((image) => (
-                          <div key={image.id} className="relative group">
-                            <img
-                              src={image.url}
-                              alt={image.name}
-                              className={`w-full h-20 object-cover rounded-lg cursor-pointer transition-all ${
-                                selectedImages.includes(image.id) 
-                                  ? 'ring-2 ring-purple-500 scale-105' 
-                                  : 'hover:scale-105'
-                              }`}
-                              onClick={() => handleImageSelect(image.id)}
-                            />
-                            <button
-                              onClick={() => removeImage(image.id)}
-                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              ×
-                            </button>
-                            <p className="text-xs text-gray-400 mt-1 truncate">{image.name}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Content Type Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Choose Content Type
+                      Trip Duration
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { id: 'blog', label: 'Travel Blog', icon: FileText, color: 'from-blue-500 to-cyan-500' },
-                        { id: 'video-script', label: 'Video Script', icon: VideoIcon, color: 'from-green-500 to-emerald-500' },
-                        { id: 'collage', label: 'Photo Collage', icon: Palette, color: 'from-purple-500 to-pink-500' },
-                        { id: 'video', label: 'Reel/Videos', icon: Play, color: 'from-orange-500 to-red-500' }
-                      ].map((type) => (
-                        <button
-                          key={type.id}
-                          type="button"
-                          onClick={() => {
-                            console.log('Button clicked:', type.id);
-                            setContentType(type.id);
-                            console.log('State should be:', type.id);
-                          }}
-                          className={`p-4 rounded-xl border-2 transition-all relative ${
-                            contentType === type.id
-                              ? `border-purple-500 bg-gradient-to-r ${type.color} text-white shadow-lg`
-                              : 'border-gray-700 bg-gray-800/50 text-gray-300 hover:border-gray-600'
-                          }`}
-                        >
-                          <type.icon className="w-6 h-6 mx-auto mb-2" />
-                          <span className="text-sm font-medium">{type.label}</span>
-                          {contentType === type.id && (
-                            <div className="absolute top-2 right-2 w-3 h-3 bg-green-400 rounded-full"></div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
+                    <input
+                      type="text"
+                      value={itinerarySearch.duration}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, duration: e.target.value})}
+                      placeholder="e.g., 5 days, 1 week, 10 days"
+                      className="input-field"
+                    />
                   </div>
-
-                  {/* Additional Prompt */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Additional Context (Optional)
+                      Interests (Optional)
                     </label>
                     <textarea
-                      value={contentPrompt}
-                      onChange={(e) => setContentPrompt(e.target.value)}
-                      placeholder="e.g., This was a trip to the mountains, focus on adventure activities..."
+                      value={itinerarySearch.interests}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, interests: e.target.value})}
+                      placeholder="e.g., History, Food, Adventure, Culture, Shopping"
                       className="input-field"
                       rows="3"
                     />
                   </div>
-
-                  {/* Generate Button */}
                   <button
-                    onClick={handleContentGeneration}
-                    disabled={loading || selectedImages.length < 2}
+                    onClick={handleItinerarySearch}
+                    disabled={loading || !itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Generating Content...</span>
+                        <span>Generating Itinerary...</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center space-x-2">
-                        <Sparkles className="w-5 h-5" />
-                        <span>Generate {contentType === 'blog' ? 'Blog Post' : contentType === 'video-script' ? 'Video Script' : contentType === 'collage' ? 'Collage Concept' : 'Reel/Videos'}</span>
+                        <Route className="w-5 h-5" />
+                        <span>Generate Itinerary</span>
                       </div>
                     )}
                   </button>
-                  
-                  {selectedImages.length < 2 && uploadedImages.length > 0 && (
-                    <p className="text-sm text-yellow-400 text-center">
-                      ⚠️ Please select at least 2 images to generate content
-                    </p>
-                  )}
-                  
-                  {uploadedImages.length === 0 && (
-                    <p className="text-sm text-gray-400 text-center">
-                      📸 Please upload some images first
-                    </p>
-                  )}
+                </div>
+              )}
+
+              {activeTab === 'forex' && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold gradient-text">Forex Exchange</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Destination
+                    </label>
+                    <input
+                      type="text"
+                      value={forexSearch.destination}
+                      onChange={(e) => setForexSearch({...forexSearch, destination: e.target.value})}
+                      placeholder="e.g., USA, UK, Japan, Australia"
+                      className="input-field"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Amount to Exchange
+                    </label>
+                    <input
+                      type="text"
+                      value={forexSearch.amount}
+                      onChange={(e) => setForexSearch({...forexSearch, amount: e.target.value})}
+                      placeholder="e.g., ₹50,000, $1000, €500"
+                      className="input-field"
+                    />
+                  </div>
+                  <button
+                    onClick={handleForexSearch}
+                    disabled={loading || !forexSearch.destination.trim() || !forexSearch.amount.trim()}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Getting Forex Information...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center space-x-2">
+                        <DollarSign className="w-5 h-5" />
+                        <span>Get Forex Information</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {activeTab === 'zero-forex' && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-green-500 rounded-xl flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold gradient-text">Zero-Forex Cards</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Destination
+                    </label>
+                    <input
+                      type="text"
+                      value={zeroForexSearch.destination}
+                      onChange={(e) => setZeroForexSearch({...zeroForexSearch, destination: e.target.value})}
+                      placeholder="e.g., USA, Europe, Asia, Worldwide"
+                      className="input-field"
+                    />
+                  </div>
+                  <button
+                    onClick={handleZeroForexSearch}
+                    disabled={loading || !zeroForexSearch.destination.trim()}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Getting Zero-Forex Cards...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center space-x-2">
+                        <CreditCard className="w-5 h-5" />
+                        <span>Get Zero-Forex Cards</span>
+                      </div>
+                    )}
+                  </button>
                 </div>
               )}
             </div>
@@ -917,238 +742,384 @@ function App() {
                     </div>
                   )}
 
-                  {/* Hotel Results */}
-                  {results.hotels && (
+                  {/* SIM Information Results */}
+                  {results.aiRecommendations && results.simOptions && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                          <Hotel className="w-4 h-4 text-white" />
+                          <Smartphone className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">Hotel Search Results</h3>
+                        <h3 className="text-xl font-bold gradient-text">SIM Information for {results.simOptions.data.destination}</h3>
                       </div>
-                      {results.hotels.success === false ? (
-                        <div className="space-y-6">
-                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
-                            <p className="text-yellow-300 text-sm">
-                              <strong>Demo Mode:</strong> {results.hotels.message}
-                            </p>
-                          </div>
-                          {results.hotels.mockData && results.hotels.mockData.hotels && (
-                            <div className="space-y-4">
-                              <h4 className="font-semibold text-gray-200">Sample Hotel Data:</h4>
-                              <div className="space-y-4">
-                                {results.hotels.mockData.hotels.map((hotel, index) => (
-                                  <div key={index} className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 hover:bg-gray-800/70 transition-all duration-300">
-                                    <div className="flex justify-between items-start">
-                                      <div>
-                                        <h5 className="font-semibold text-white text-lg">{hotel.name}</h5>
-                                        <p className="text-gray-400">{hotel.location}</p>
-                                        <div className="flex items-center mt-3">
-                                          <div className="flex text-yellow-400">
-                                            {[...Array(5)].map((_, i) => (
-                                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(hotel.rating) ? 'fill-current' : ''}`} />
-                                            ))}
-                                          </div>
-                                          <span className="text-gray-400 text-sm ml-2">{hotel.rating}</span>
-                                        </div>
-                                      </div>
-                                      <div className="text-right">
-                                        <p className="font-bold text-2xl text-green-400">{hotel.price}</p>
-                                        <p className="text-xs text-gray-500">per night</p>
-                                      </div>
-                                    </div>
-                                    <div className="mt-4">
-                                      <div className="flex flex-wrap gap-2">
-                                        {hotel.amenities.map((amenity, idx) => (
-                                          <span key={idx} className="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30">
-                                            {amenity}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </div>
+                      
+                      {/* AI Recommendations */}
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
+                        <div className="prose prose-invert max-w-none">
+                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                            {results.aiRecommendations}
+                          </pre>
+                        </div>
+                      </div>
+
+                      {/* SIM Options */}
+                      <div className="space-y-6">
+                        <h4 className="text-lg font-semibold text-gray-200">Available SIM Options</h4>
+                        
+                        {/* Local Carriers */}
+                        <div>
+                          <h5 className="font-semibold text-blue-300 mb-3">Local Carriers</h5>
+                          <div className="space-y-4">
+                            {results.simOptions.data.localCarriers.map((carrier, index) => (
+                              <div key={index} className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h6 className="font-semibold text-blue-200">{carrier.name}</h6>
+                                    <p className="text-blue-300 text-sm">Coverage: {carrier.coverage}</p>
                                   </div>
-                                ))}
+                                </div>
+                                <div className="mt-3">
+                                  <p className="text-blue-300 text-sm font-medium">Data Plans:</p>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {carrier.dataPlans.map((plan, idx) => (
+                                      <span key={idx} className="text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30">
+                                        {plan}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            ))}
+                          </div>
                         </div>
-                      ) : (
-                        <div className="text-gray-400">
-                          <p>Hotel search completed. Check the console for detailed results.</p>
-                          <p className="text-sm mt-2">
-                            Note: This is a demo. In a real implementation, you would display actual hotel data from the Cleartrip API.
-                          </p>
+
+                        {/* International SIMs */}
+                        <div>
+                          <h5 className="font-semibold text-green-300 mb-3">International SIMs</h5>
+                          <div className="space-y-4">
+                            {results.simOptions.data.internationalSIMs.map((sim, index) => (
+                              <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-xl p-4">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h6 className="font-semibold text-green-200">{sim.name}</h6>
+                                    <p className="text-green-300 text-sm">Coverage: {sim.coverage}</p>
+                                  </div>
+                                </div>
+                                <div className="mt-3">
+                                  <p className="text-green-300 text-sm font-medium">Data Plans:</p>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {sim.dataPlans.map((plan, idx) => (
+                                      <span key={idx} className="text-xs bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-500/30">
+                                        {plan}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      )}
+
+                        {/* eSIMs */}
+                        <div>
+                          <h5 className="font-semibold text-purple-300 mb-3">eSIM Options</h5>
+                          <div className="space-y-4">
+                            {results.simOptions.data.eSIMs.map((esim, index) => (
+                              <div key={index} className="bg-purple-900/20 border border-purple-500/30 rounded-xl p-4">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h6 className="font-semibold text-purple-200">{esim.name}</h6>
+                                    <p className="text-purple-300 text-sm">Coverage: {esim.coverage}</p>
+                                  </div>
+                                </div>
+                                <div className="mt-3">
+                                  <p className="text-purple-300 text-sm font-medium">Data Plans:</p>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {esim.dataPlans.map((plan, idx) => (
+                                      <span key={idx} className="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30">
+                                        {plan}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  {/* Flight Results */}
-                  {results.flights && (
+                  {/* Visa Information Results */}
+                  {results.aiRecommendations && results.visaRequirements && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                          <Plane className="w-4 h-4 text-white" />
+                          <FileCheck className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">Flight Search Results</h3>
+                        <h3 className="text-xl font-bold gradient-text">Visa Information for {results.visaRequirements.data.destination}</h3>
                       </div>
-                      {results.flights.success === false ? (
-                        <div className="space-y-6">
-                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
-                            <p className="text-yellow-300 text-sm">
-                              <strong>Demo Mode:</strong> {results.flights.message}
-                            </p>
-                          </div>
-                          {results.flights.mockData && results.flights.mockData.flights && (
-                            <div className="space-y-4">
-                              <h4 className="font-semibold text-gray-200">Sample Flight Data:</h4>
-                              <div className="space-y-4">
-                                {results.flights.mockData.flights.map((flight, index) => (
-                                  <div key={index} className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 hover:bg-gray-800/70 transition-all duration-300">
-                                    <div className="flex justify-between items-center">
-                                      <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-4">
-                                          <div>
-                                            <h5 className="font-semibold text-white text-lg">{flight.airline}</h5>
-                                            <p className="text-gray-400">{flight.flightNumber}</p>
-                                          </div>
-                                          <div className="text-right">
-                                            <p className="font-bold text-2xl text-green-400">{flight.price}</p>
-                                            <p className="text-xs text-gray-500">per person</p>
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                          <div className="text-center">
-                                            <p className="font-semibold text-white text-lg">{flight.departure}</p>
-                                            <p className="text-xs text-gray-400">Departure</p>
-                                          </div>
-                                          <div className="flex-1 mx-6">
-                                            <div className="border-t border-gray-600 relative">
-                                              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                                              </div>
-                                            </div>
-                                            <p className="text-center text-sm text-gray-400 mt-2">{flight.duration}</p>
-                                          </div>
-                                          <div className="text-center">
-                                            <p className="font-semibold text-white text-lg">{flight.arrival}</p>
-                                            <p className="text-xs text-gray-400">Arrival</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
+                      
+                      {/* AI Recommendations */}
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
+                        <div className="prose prose-invert max-w-none">
+                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                            {results.aiRecommendations}
+                          </pre>
+                        </div>
+                      </div>
+
+                      {/* Visa Requirements */}
+                      <div className="space-y-6">
+                        <h4 className="text-lg font-semibold text-gray-200">Visa Requirements</h4>
+                        
+                        <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <h5 className="font-semibold text-green-200 mb-3">Visa Types</h5>
+                              <div className="space-y-3">
+                                {results.visaRequirements.data.visaTypes.map((visa, index) => (
+                                  <div key={index} className="bg-green-800/30 border border-green-600/30 rounded-lg p-3">
+                                    <h6 className="font-semibold text-green-200">{visa.type}</h6>
+                                    <p className="text-green-300 text-sm">Validity: {visa.validity}</p>
+                                    <p className="text-green-300 text-sm">Processing: {visa.processingTime}</p>
+                                    <p className="text-green-300 text-sm">Fee: {visa.fee}</p>
                                   </div>
                                 ))}
                               </div>
                             </div>
-                          )}
+                            
+                            <div>
+                              <h5 className="font-semibold text-green-200 mb-3">Required Documents</h5>
+                              <div className="space-y-2">
+                                {results.visaRequirements.data.requiredDocuments.map((doc, index) => (
+                                  <div key={index} className="flex items-center space-x-2">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span className="text-green-300 text-sm">{doc}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6">
+                            <h5 className="font-semibold text-green-200 mb-3">Application Process</h5>
+                            <div className="space-y-2">
+                              {results.visaRequirements.data.applicationProcess.map((step, index) => (
+                                <div key={index} className="flex items-center space-x-3">
+                                  <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                    {index + 1}
+                                  </div>
+                                  <span className="text-green-300 text-sm">{step}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                      ) : (
-                        <div className="text-gray-400">
-                          <p>Flight search completed. Check the console for detailed results.</p>
-                          <p className="text-sm mt-2">
-                            Note: This is a demo. In a real implementation, you would display actual flight data from the Cleartrip API.
-                          </p>
-                        </div>
-                      )}
+                      </div>
                     </div>
                   )}
 
-                  {/* Natural Language Search Results */}
-                  {results.aiInterpretation && (
+                  {/* Insurance Information Results */}
+                  {results.aiRecommendations && results.insurancePlans && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                          <MessageCircle className="w-4 h-4 text-white" />
+                          <Shield className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">AI Interpretation</h3>
+                        <h3 className="text-xl font-bold gradient-text">Insurance Information for {results.insurancePlans.data.destination}</h3>
                       </div>
+                      
+                      {/* AI Recommendations */}
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
+                        <div className="prose prose-invert max-w-none">
+                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                            {results.aiRecommendations}
+                          </pre>
+                        </div>
+                      </div>
+
+                      {/* Insurance Plans */}
+                      <div className="space-y-6">
+                        <h4 className="text-lg font-semibold text-gray-200">Available Insurance Plans</h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {results.insurancePlans.data.plans.map((plan, index) => (
+                            <div key={index} className="bg-orange-900/20 border border-orange-500/30 rounded-xl p-6 hover:bg-orange-900/30 transition-all duration-300">
+                              <div className="text-center mb-4">
+                                <h5 className="font-semibold text-orange-200 text-lg">{plan.name}</h5>
+                                <p className="text-orange-400 text-2xl font-bold">{plan.premium}</p>
+                                <p className="text-orange-300 text-sm">Coverage: {plan.coverageAmount}</p>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <p className="text-orange-300 text-sm font-medium">Coverage Includes:</p>
+                                {plan.coverage.map((item, idx) => (
+                                  <div key={idx} className="flex items-center space-x-2">
+                                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                                    <span className="text-orange-300 text-sm">{item}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              
+                              <button className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                                Get Quote
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* International Itinerary Results */}
+                  {results.itinerary && (
+                    <div className="card">
+                      <div className="flex items-center space-x-3 mb-6">
+                        <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                          <Route className="w-4 h-4 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold gradient-text">
+                          {results.duration} Itinerary for {results.destination}
+                        </h3>
+                      </div>
+                      
                       <div className="prose prose-invert max-w-none">
                         <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                          {results.aiInterpretation}
+                          {results.itinerary}
                         </pre>
                       </div>
                     </div>
                   )}
 
-                  {/* Available Locations Info */}
-                  {results.availableLocations && (
-                    <div className="card bg-blue-900/20 border-blue-500/30">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                          <Globe className="w-4 h-4 text-white" />
+                  {/* Forex Information Results */}
+                  {results.aiRecommendations && results.exchangeRates && (
+                    <div className="card">
+                      <div className="flex items-center space-x-3 mb-6">
+                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                          <DollarSign className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-lg font-semibold text-blue-300">
-                          Available Locations for Testing
-                        </h3>
+                        <h3 className="text-xl font-bold gradient-text">Forex Information for {results.exchangeRates.data.destination}</h3>
                       </div>
-                      <div className="text-blue-200">
-                        <p className="text-sm mb-3">Currently, hotel data is available for these locations:</p>
-                        <div className="grid grid-cols-2 gap-3">
-                          {results.availableLocations.map(location => (
-                            <div key={location.id} className="bg-blue-800/30 border border-blue-600/30 rounded-lg p-3">
-                              <p className="font-medium text-blue-200">{location.name}</p>
-                              <p className="text-xs text-blue-300">ID: {location.id}</p>
+                      
+                      {/* AI Recommendations */}
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
+                        <div className="prose prose-invert max-w-none">
+                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                            {results.aiRecommendations}
+                          </pre>
+                        </div>
+                      </div>
+
+                      {/* Exchange Rates */}
+                      <div className="space-y-6">
+                        <h4 className="text-lg font-semibold text-gray-200">Current Exchange Rates</h4>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {Object.entries(results.exchangeRates.data.rates).map(([currency, data]) => (
+                            <div key={currency} className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 text-center">
+                              <h5 className="font-semibold text-yellow-200 text-lg">{currency}</h5>
+                              <p className="text-yellow-400 text-2xl font-bold">{data.rate}</p>
+                              <div className={`text-sm ${data.trend === 'up' ? 'text-green-400' : data.trend === 'down' ? 'text-red-400' : 'text-gray-400'}`}>
+                                {data.change}
+                              </div>
                             </div>
                           ))}
+                        </div>
+
+                        {/* Exchange Options */}
+                        <div>
+                          <h5 className="font-semibold text-yellow-200 mb-3">Exchange Options</h5>
+                          <div className="space-y-3">
+                            {results.exchangeRates.data.exchangeOptions.map((option, index) => (
+                              <div key={index} className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h6 className="font-semibold text-yellow-200">{option.type}</h6>
+                                    <p className="text-yellow-300 text-sm">Rate: {option.rate}</p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-yellow-400 font-semibold">Fee: {option.fee}</p>
+                                    <p className="text-yellow-300 text-sm">Convenience: {option.convenience}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Content Creator Results */}
-                  {generatedContent && (
+                  {/* Zero Forex Cards Results */}
+                  {results.aiRecommendations && results.cards && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
-                        <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                          <Image className="w-4 h-4 text-white" />
+                        <div className="w-8 h-8 bg-gradient-to-r from-teal-500 to-green-500 rounded-lg flex items-center justify-center">
+                          <CreditCard className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">
-                          Generated {generatedContent.type === 'blog' ? 'Travel Blog' : 
-                                   generatedContent.type === 'video-script' ? 'Video Script' : 
-                                   generatedContent.type === 'collage' ? 'Collage Concept' : 'Reel/Videos'}
-                        </h3>
+                        <h3 className="text-xl font-bold gradient-text">Zero-Forex Cards for {results.cards.data.destination}</h3>
                       </div>
                       
-                      {/* Selected Images */}
+                      {/* AI Recommendations */}
                       <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">Selected Images</h4>
-                        <div className="grid grid-cols-3 gap-3">
-                          {generatedContent.images.map((image, index) => (
-                            <div key={image.id} className="relative">
-                              <img
-                                src={image.url}
-                                alt={image.name}
-                                className="w-full h-24 object-cover rounded-lg"
-                              />
-                              <div className="absolute top-1 left-1 w-6 h-6 bg-purple-500 text-white rounded-full text-xs flex items-center justify-center">
-                                {index + 1}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Generated Content */}
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">Generated Content</h4>
+                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
                         <div className="prose prose-invert max-w-none">
                           <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                            {generatedContent.content}
+                            {results.aiRecommendations}
                           </pre>
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="mt-6 flex space-x-3">
-                        <button className="btn-secondary flex-1">
-                          <FileText className="w-4 h-4 mr-2" />
-                          Copy to Clipboard
-                        </button>
-                        <button className="btn-secondary flex-1">
-                          <Video className="w-4 h-4 mr-2" />
-                          Download
-                        </button>
+                      {/* Credit Cards */}
+                      <div className="space-y-6">
+                        <h4 className="text-lg font-semibold text-gray-200">Available Zero-Forex Cards</h4>
+                        
+                        <div className="space-y-4">
+                          {results.cards.data.cards.map((card, index) => (
+                            <div key={index} className="bg-teal-900/20 border border-teal-500/30 rounded-xl p-6 hover:bg-teal-900/30 transition-all duration-300">
+                              <div className="flex justify-between items-start mb-4">
+                                <div>
+                                  <h5 className="font-semibold text-teal-200 text-lg">{card.name}</h5>
+                                  <p className="text-teal-300 text-sm">Annual Fee: {card.annualFee}</p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-teal-400 font-bold text-lg">{card.forexMarkup}</p>
+                                  <p className="text-teal-300 text-sm">Forex Markup</p>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-3">
+                                <div>
+                                  <p className="text-teal-300 text-sm font-medium">Features:</p>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {card.features.map((feature, idx) => (
+                                      <span key={idx} className="text-xs bg-teal-500/20 text-teal-300 px-3 py-1 rounded-full border border-teal-500/30">
+                                        {feature}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <p className="text-teal-300">Acceptance: <span className="text-teal-200">{card.acceptance}</span></p>
+                                  </div>
+                                  <div>
+                                    <p className="text-teal-300">Application: <span className="text-teal-200">{card.applicationProcess}</span></p>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <button className="w-full mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                                Apply Now
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1165,7 +1136,7 @@ function App() {
                       Ready to explore?
                     </h3>
                     <p className="text-gray-400 text-lg">
-                      Use the search panel on the left to find hotels, flights, or get AI-powered travel recommendations.
+                      Use the search panel on the left to get travel information, SIM details, visa requirements, insurance plans, itineraries, forex rates, and zero-forex credit cards.
                     </p>
                   </div>
                 </div>
