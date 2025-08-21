@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    color: #ffffff;
+  }
+
+  /* Custom Scrollbar for Dark Theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(31, 41, 55, 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: rgba(31, 41, 55, 0.3);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-700 hover:border-gray-600;
+  }
+  
+  .card {
+    @apply bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-6 shadow-2xl hover:shadow-purple-500/10 transition-all duration-300;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300;
+  }
+
+  .glass-effect {
+    @apply bg-gray-900/20 backdrop-blur-md border border-gray-800/30;
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent;
+  }
+
+  .floating-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    from { box-shadow: 0 0 20px rgba(147, 51, 234, 0.3); }
+    to { box-shadow: 0 0 30px rgba(147, 51, 234, 0.6); }
+  }
+
+  .watermark {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(236, 72, 153, 0.15), rgba(59, 130, 246, 0.15));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 
+      0 0 30px rgba(147, 51, 234, 0.3),
+      0 0 60px rgba(236, 72, 153, 0.2),
+      0 0 90px rgba(59, 130, 246, 0.1);
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+    animation: watermark-glow 4s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.2));
+    letter-spacing: 0.5rem;
+  }
+
+  @keyframes watermark-glow {
+    0% {
+      opacity: 0.3;
+      text-shadow: 
+        0 0 30px rgba(147, 51, 234, 0.3),
+        0 0 60px rgba(236, 72, 153, 0.2),
+        0 0 90px rgba(59, 130, 246, 0.1);
+    }
+    100% {
+      opacity: 0.6;
+      text-shadow: 
+        0 0 40px rgba(147, 51, 234, 0.5),
+        0 0 80px rgba(236, 72, 153, 0.3),
+        0 0 120px rgba(59, 130, 246, 0.2);
+    }
+  }
+
+  .cyber-border {
+    position: relative;
+  }
+
+  .cyber-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 1rem;
+    padding: 2px;
+    background: linear-gradient(45deg, #8b5cf6, #ec4899, #3b82f6, #8b5cf6);
+    background-size: 400% 400%;
+    animation: gradient-shift 3s ease infinite;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Scrollable Content Areas */
+  .scrollable-content {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .scrollable-content-tall {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .scrollable-content-medium {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* AI Response Boxes */
+  .ai-response-box {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  /* Hotel/Flight Results Container */
+  .results-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Individual Result Cards */
+  .result-card {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* For very long lists */
+  .long-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+} 
