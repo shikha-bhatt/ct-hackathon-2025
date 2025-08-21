@@ -1152,7 +1152,7 @@ function App() {
                         <div className="w-8 h-8 bg-gradient-to-r from-teal-500 to-green-500 rounded-lg flex items-center justify-center">
                           <CreditCard className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">Zero-Forex Cards for {results.cards.data.destination}</h3>
+                        <h3 className="text-xl font-bold gradient-text">Zero-Forex Cards for {results.destination || 'your destination'}</h3>
                       </div>
                       
                       {/* AI Recommendations */}
@@ -1170,7 +1170,7 @@ function App() {
                         <h4 className="text-lg font-semibold text-gray-200">Available Zero-Forex Cards</h4>
                         
                         <div className="space-y-4">
-                          {results.cards.data.cards.map((card, index) => (
+                          {results.cards.cards && results.cards.cards.map((card, index) => (
                             <div key={index} className="bg-teal-900/20 border border-teal-500/30 rounded-xl p-6 hover:bg-teal-900/30 transition-all duration-300">
                               <div className="flex justify-between items-start mb-4">
                                 <div>

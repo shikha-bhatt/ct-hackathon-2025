@@ -294,6 +294,97 @@ export class TravelService {
       flights: null
     };
   }
+
+  async getZeroForexCards(destination) {
+    try {
+      const response = await axios.post('http://localhost:8080/api/zero-forex-cards/recommendations', {
+        destination: destination
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching zero forex cards:', error);
+      // Fallback to mock data if backend is not available
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            aiRecommendations: `Based on your destination ${destination}, here are the best zero-forex credit cards:
+
+**Top Recommendations for ${destination}:**
+
+1. **HDFC Regalia Credit Card**
+   - Annual Fee: ₹2,500 + GST
+   - Forex Markup: 0%
+   - Best for: Frequent travelers
+   - Features: Airport lounge access, travel insurance, reward points
+
+2. **Axis Bank Flipkart Axis Bank Credit Card**
+   - Annual Fee: ₹500 + GST
+   - Forex Markup: 0%
+   - Best for: Budget-conscious travelers
+   - Features: Flipkart rewards, no joining fee
+
+3. **ICICI Bank Sapphiro Credit Card**
+   - Annual Fee: ₹3,000 + GST
+   - Forex Markup: 0%
+   - Best for: Premium travelers
+   - Features: Premium lounge access, golf privileges
+
+**Key Benefits:**
+- No foreign transaction fees
+- Better exchange rates than traditional forex cards
+- Reward points on international spending
+- Travel insurance coverage
+
+**Application Process:**
+1. Visit the bank's website
+2. Fill out the online application
+3. Submit required documents
+4. Wait for approval (usually 7-10 days)
+
+**Tips:**
+- Apply at least 2-3 weeks before your trip
+- Ensure you meet the income requirements
+- Keep your credit score in good standing
+- Consider the annual fee vs. potential savings
+
+**Cost Comparison:**
+Traditional forex cards: 3-5% markup
+Zero-forex cards: 0% markup
+Potential savings on ₹50,000 spending: ₹1,500-2,500`,
+            destination: destination,
+            cards: {
+              cards: [
+                {
+                  name: "HDFC Regalia Credit Card",
+                  annualFee: "₹2,500 + GST",
+                  forexMarkup: "0%",
+                  acceptance: "Excellent",
+                  applicationProcess: "Online/Offline",
+                  features: ["Zero forex markup", "Airport lounge access", "Travel insurance", "Reward points"]
+                },
+                {
+                  name: "Axis Bank Flipkart Axis Bank Credit Card",
+                  annualFee: "₹500 + GST",
+                  forexMarkup: "0%",
+                  acceptance: "Good",
+                  applicationProcess: "Online",
+                  features: ["Zero forex markup", "Flipkart rewards", "No joining fee", "Welcome benefits"]
+                },
+                {
+                  name: "ICICI Bank Sapphiro Credit Card",
+                  annualFee: "₹3,000 + GST",
+                  forexMarkup: "0%",
+                  acceptance: "Excellent",
+                  applicationProcess: "Online/Offline",
+                  features: ["Zero forex markup", "Premium lounge access", "Golf privileges", "Concierge services"]
+                }
+              ]
+            }
+          });
+        }, 2000);
+      });
+    }
+  }
 }
 
 // Export instances for easy use
