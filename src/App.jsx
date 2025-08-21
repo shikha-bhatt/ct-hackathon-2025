@@ -1381,7 +1381,7 @@ function App() {
                   )}
 
                   {/* Forex Information Results */}
-                  {results.aiRecommendations && results.destination && (
+                  {activeTab === 'forex' && results.aiRecommendations && results.destination && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
