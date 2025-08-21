@@ -423,25 +423,37 @@ function App() {
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Destination
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={visaSearch.destination}
                       onChange={(e) => setVisaSearch({...visaSearch, destination: e.target.value})}
-                      placeholder="e.g., USA, UK, Australia"
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a country</option>
+                      <option value="USA">USA</option>
+                      <option value="UK">UK</option>
+                      <option value="Japan">Japan</option>
+                      <option value="India">India</option>
+                      <option value="Australia">Australia</option>
+                      {/* Add more countries as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Nationality
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={visaSearch.nationality}
                       onChange={(e) => setVisaSearch({...visaSearch, nationality: e.target.value})}
-                      placeholder="e.g., Indian, American"
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select nationality</option>
+                      <option value="Indian">Indian</option>
+                      <option value="American">American</option>
+                      <option value="British">British</option>
+                      <option value="Japanese">Japanese</option>
+                      <option value="Australian">Australian</option>
+                      {/* Add more nationalities as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
