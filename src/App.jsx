@@ -949,10 +949,33 @@ function App() {
                           AI Travel Recommendations for {destination}
                         </h3>
                       </div>
-                      <div className="prose prose-invert max-w-none">
-                        <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                          {results.recommendations}
-                        </pre>
+                      
+                      <div className="mb-6">
+                        <div className="bg-purple-900/20 border border-purple-500/30 rounded-xl p-6">
+                          <h4 className="text-lg font-semibold text-purple-200 mb-3">Personalized Recommendations</h4>
+                          <div className="prose prose-invert max-w-none">
+                            <div 
+                              className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.recommendations) }}
+                              style={{
+                                '--tw-prose-headings': 'rgb(209 213 219)',
+                                '--tw-prose-links': 'rgb(59 130 246)',
+                                '--tw-prose-bold': 'rgb(255 255 255)',
+                                '--tw-prose-counters': 'rgb(156 163 175)',
+                                '--tw-prose-bullets': 'rgb(156 163 175)',
+                                '--tw-prose-hr': 'rgb(75 85 99)',
+                                '--tw-prose-quotes': 'rgb(156 163 175)',
+                                '--tw-prose-quote-borders': 'rgb(75 85 99)',
+                                '--tw-prose-captions': 'rgb(156 163 175)',
+                                '--tw-prose-code': 'rgb(255 255 255)',
+                                '--tw-prose-pre-code': 'rgb(209 213 219)',
+                                '--tw-prose-pre-bg': 'rgb(17 24 39)',
+                                '--tw-prose-th-borders': 'rgb(75 85 99)',
+                                '--tw-prose-td-borders': 'rgb(55 65 81)'
+                              }}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -969,28 +992,30 @@ function App() {
                       
                       {/* AI Recommendations */}
                       <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
-                        <div className="prose prose-invert max-w-none">
-                          <div 
-                            className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.aiRecommendations) }}
-                            style={{
-                              '--tw-prose-headings': 'rgb(209 213 219)',
-                              '--tw-prose-links': 'rgb(59 130 246)',
-                              '--tw-prose-bold': 'rgb(255 255 255)',
-                              '--tw-prose-counters': 'rgb(156 163 175)',
-                              '--tw-prose-bullets': 'rgb(156 163 175)',
-                              '--tw-prose-hr': 'rgb(75 85 99)',
-                              '--tw-prose-quotes': 'rgb(156 163 175)',
-                              '--tw-prose-quote-borders': 'rgb(75 85 99)',
-                              '--tw-prose-captions': 'rgb(156 163 175)',
-                              '--tw-prose-code': 'rgb(255 255 255)',
-                              '--tw-prose-pre-code': 'rgb(209 213 219)',
-                              '--tw-prose-pre-bg': 'rgb(17 24 39)',
-                              '--tw-prose-th-borders': 'rgb(75 85 99)',
-                              '--tw-prose-td-borders': 'rgb(55 65 81)'
-                            }}
-                          />
+                        <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-6">
+                          <h4 className="text-lg font-semibold text-blue-200 mb-3">AI Recommendations</h4>
+                          <div className="prose prose-invert max-w-none">
+                            <div 
+                              className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.aiRecommendations) }}
+                              style={{
+                                '--tw-prose-headings': 'rgb(209 213 219)',
+                                '--tw-prose-links': 'rgb(59 130 246)',
+                                '--tw-prose-bold': 'rgb(255 255 255)',
+                                '--tw-prose-counters': 'rgb(156 163 175)',
+                                '--tw-prose-bullets': 'rgb(156 163 175)',
+                                '--tw-prose-hr': 'rgb(75 85 99)',
+                                '--tw-prose-quotes': 'rgb(156 163 175)',
+                                '--tw-prose-quote-borders': 'rgb(75 85 99)',
+                                '--tw-prose-captions': 'rgb(156 163 175)',
+                                '--tw-prose-code': 'rgb(255 255 255)',
+                                '--tw-prose-pre-code': 'rgb(209 213 219)',
+                                '--tw-prose-pre-bg': 'rgb(17 24 39)',
+                                '--tw-prose-th-borders': 'rgb(75 85 99)',
+                                '--tw-prose-td-borders': 'rgb(55 65 81)'
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -1011,23 +1036,27 @@ function App() {
                                   <div className="flex justify-between items-start mb-4">
                                     <div>
                                       <h6 className="font-semibold text-blue-200 text-lg mb-2">{carrier.name}</h6>
-                                      <div className="space-y-2 text-sm">
-                                        <p className="text-blue-300 flex items-center">
-                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                                          Coverage: {carrier.coverage}
-                                        </p>
-                                        <p className="text-blue-300 flex items-center">
-                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                                          Network Quality: {carrier.networkQuality}
-                                        </p>
-                                        <p className="text-blue-300 flex items-center">
-                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                                          Customer Support: {carrier.customerSupport}
-                                        </p>
-                                        <p className="text-blue-300 flex items-center">
-                                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                                          Activation: {carrier.activationTime}
-                                        </p>
+                                      <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="space-y-2">
+                                          <p className="text-blue-300 flex items-center">
+                                            <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                            Coverage: <span className="font-medium ml-1">{carrier.coverage}</span>
+                                          </p>
+                                          <p className="text-blue-300 flex items-center">
+                                            <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                            Network: <span className="font-medium ml-1">{carrier.networkQuality}</span>
+                                          </p>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <p className="text-blue-300 flex items-center">
+                                            <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                            Support: <span className="font-medium ml-1">{carrier.customerSupport}</span>
+                                          </p>
+                                          <p className="text-blue-300 flex items-center">
+                                            <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                            Activation: <span className="font-medium ml-1">{carrier.activationTime}</span>
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
                                     <div className="text-right">
@@ -1068,23 +1097,27 @@ function App() {
                                   <div className="flex justify-between items-start mb-4">
                                     <div>
                                       <h6 className="font-semibold text-green-200 text-lg mb-2">{sim.name}</h6>
-                                      <div className="space-y-2 text-sm">
-                                        <p className="text-green-300 flex items-center">
-                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                                          Coverage: {sim.coverage}
-                                        </p>
-                                        <p className="text-green-300 flex items-center">
-                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                                          Validity: {sim.validity}
-                                        </p>
-                                        <p className="text-green-300 flex items-center">
-                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                                          Activation: {sim.activationProcess}
-                                        </p>
-                                        <p className="text-green-300 flex items-center">
-                                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                                          Support: {sim.customerSupport}
-                                        </p>
+                                      <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="space-y-2">
+                                          <p className="text-green-300 flex items-center">
+                                            <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                            Coverage: <span className="font-medium ml-1">{sim.coverage}</span>
+                                          </p>
+                                          <p className="text-green-300 flex items-center">
+                                            <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                            Validity: <span className="font-medium ml-1">{sim.validity}</span>
+                                          </p>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <p className="text-green-300 flex items-center">
+                                            <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                            Activation: <span className="font-medium ml-1">{sim.activationProcess}</span>
+                                          </p>
+                                          <p className="text-green-300 flex items-center">
+                                            <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                            Support: <span className="font-medium ml-1">{sim.customerSupport}</span>
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
                                     <div className="text-right">
@@ -1125,23 +1158,27 @@ function App() {
                                   <div className="flex justify-between items-start mb-4">
                                     <div>
                                       <h6 className="font-semibold text-purple-200 text-lg mb-2">{esim.name}</h6>
-                                      <div className="space-y-2 text-sm">
-                                        <p className="text-purple-300 flex items-center">
-                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
-                                          Coverage: {esim.coverage}
-                                        </p>
-                                        <p className="text-purple-300 flex items-center">
-                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
-                                          Compatibility: {esim.compatibility}
-                                        </p>
-                                        <p className="text-purple-300 flex items-center">
-                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
-                                          Activation: {esim.activationTime}
-                                        </p>
-                                        <p className="text-purple-300 flex items-center">
-                                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
-                                          Validity: {esim.validity}
-                                        </p>
+                                      <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="space-y-2">
+                                          <p className="text-purple-300 flex items-center">
+                                            <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                            Coverage: <span className="font-medium ml-1">{esim.coverage}</span>
+                                          </p>
+                                          <p className="text-purple-300 flex items-center">
+                                            <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                            Compatibility: <span className="font-medium ml-1">{esim.compatibility}</span>
+                                          </p>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <p className="text-purple-300 flex items-center">
+                                            <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                            Activation: <span className="font-medium ml-1">{esim.activationTime}</span>
+                                          </p>
+                                          <p className="text-purple-300 flex items-center">
+                                            <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                                            Validity: <span className="font-medium ml-1">{esim.validity}</span>
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
                                     <div className="text-right">
@@ -1173,70 +1210,40 @@ function App() {
                   )}
 
                   {/* Visa Information Results */}
-                  {results.aiRecommendations && results.visaRequirements && (
+                  {activeTab === 'visa-info' && results.aiRecommendations && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
                           <FileCheck className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">Visa Information for {results.visaRequirements.data.destination}</h3>
+                        <h3 className="text-xl font-bold gradient-text">Visa Information for {visaSearch.destination}</h3>
                       </div>
                       
                       {/* AI Recommendations */}
                       <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
-                        <div className="prose prose-invert max-w-none">
-                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                            {results.aiRecommendations}
-                          </pre>
-                        </div>
-                      </div>
-
-                      {/* Visa Requirements */}
-                      <div className="space-y-6">
-                        <h4 className="text-lg font-semibold text-gray-200">Visa Requirements</h4>
-                        
                         <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                              <h5 className="font-semibold text-green-200 mb-3">Visa Types</h5>
-                              <div className="space-y-3">
-                                {results.visaRequirements.data.visaTypes.map((visa, index) => (
-                                  <div key={index} className="bg-green-800/30 border border-green-600/30 rounded-lg p-3">
-                                    <h6 className="font-semibold text-green-200">{visa.type}</h6>
-                                    <p className="text-green-300 text-sm">Validity: {visa.validity}</p>
-                                    <p className="text-green-300 text-sm">Processing: {visa.processingTime}</p>
-                                    <p className="text-green-300 text-sm">Fee: {visa.fee}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                            
-                            <div>
-                              <h5 className="font-semibold text-green-200 mb-3">Required Documents</h5>
-                              <div className="space-y-2">
-                                {results.visaRequirements.data.requiredDocuments.map((doc, index) => (
-                                  <div key={index} className="flex items-center space-x-2">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                    <span className="text-green-300 text-sm">{doc}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-6">
-                            <h5 className="font-semibold text-green-200 mb-3">Application Process</h5>
-                            <div className="space-y-2">
-                              {results.visaRequirements.data.applicationProcess.map((step, index) => (
-                                <div key={index} className="flex items-center space-x-3">
-                                  <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                                    {index + 1}
-                                  </div>
-                                  <span className="text-green-300 text-sm">{step}</span>
-                                </div>
-                              ))}
-                            </div>
+                          <h4 className="text-lg font-semibold text-green-200 mb-3">AI Recommendations</h4>
+                          <div className="prose prose-invert max-w-none">
+                            <div 
+                              className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.aiRecommendations) }}
+                              style={{
+                                '--tw-prose-headings': 'rgb(209 213 219)',
+                                '--tw-prose-links': 'rgb(59 130 246)',
+                                '--tw-prose-bold': 'rgb(255 255 255)',
+                                '--tw-prose-counters': 'rgb(156 163 175)',
+                                '--tw-prose-bullets': 'rgb(156 163 175)',
+                                '--tw-prose-hr': 'rgb(75 85 99)',
+                                '--tw-prose-quotes': 'rgb(156 163 175)',
+                                '--tw-prose-quote-borders': 'rgb(75 85 99)',
+                                '--tw-prose-captions': 'rgb(156 163 175)',
+                                '--tw-prose-code': 'rgb(255 255 255)',
+                                '--tw-prose-pre-code': 'rgb(209 213 219)',
+                                '--tw-prose-pre-bg': 'rgb(17 24 39)',
+                                '--tw-prose-th-borders': 'rgb(75 85 99)',
+                                '--tw-prose-td-borders': 'rgb(55 65 81)'
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
@@ -1732,11 +1739,30 @@ function App() {
                       
                       {/* AI Recommendations */}
                       <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
-                        <div className="prose prose-invert max-w-none">
-                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                            {results.aiRecommendations}
-                          </pre>
+                        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-6">
+                          <h4 className="text-lg font-semibold text-yellow-200 mb-3">AI Recommendations</h4>
+                          <div className="prose prose-invert max-w-none">
+                            <div 
+                              className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.aiRecommendations) }}
+                              style={{
+                                '--tw-prose-headings': 'rgb(209 213 219)',
+                                '--tw-prose-links': 'rgb(59 130 246)',
+                                '--tw-prose-bold': 'rgb(255 255 255)',
+                                '--tw-prose-counters': 'rgb(156 163 175)',
+                                '--tw-prose-bullets': 'rgb(156 163 175)',
+                                '--tw-prose-hr': 'rgb(75 85 99)',
+                                '--tw-prose-quotes': 'rgb(156 163 175)',
+                                '--tw-prose-quote-borders': 'rgb(75 85 99)',
+                                '--tw-prose-captions': 'rgb(156 163 175)',
+                                '--tw-prose-code': 'rgb(255 255 255)',
+                                '--tw-prose-pre-code': 'rgb(209 213 219)',
+                                '--tw-prose-pre-bg': 'rgb(17 24 39)',
+                                '--tw-prose-th-borders': 'rgb(75 85 99)',
+                                '--tw-prose-td-borders': 'rgb(55 65 81)'
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -1849,11 +1875,30 @@ function App() {
                       
                       {/* AI Recommendations */}
                       <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
-                        <div className="prose prose-invert max-w-none">
-                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                            {results.aiRecommendations}
-                          </pre>
+                        <div className="bg-teal-900/20 border border-teal-500/30 rounded-xl p-6">
+                          <h4 className="text-lg font-semibold text-teal-200 mb-3">AI Recommendations</h4>
+                          <div className="prose prose-invert max-w-none">
+                            <div 
+                              className="ai-response-box bg-gray-800/50 p-6 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: formatAIRecommendations(results.aiRecommendations) }}
+                              style={{
+                                '--tw-prose-headings': 'rgb(209 213 219)',
+                                '--tw-prose-links': 'rgb(59 130 246)',
+                                '--tw-prose-bold': 'rgb(255 255 255)',
+                                '--tw-prose-counters': 'rgb(156 163 175)',
+                                '--tw-prose-bullets': 'rgb(156 163 175)',
+                                '--tw-prose-hr': 'rgb(75 85 99)',
+                                '--tw-prose-quotes': 'rgb(156 163 175)',
+                                '--tw-prose-quote-borders': 'rgb(75 85 99)',
+                                '--tw-prose-captions': 'rgb(156 163 175)',
+                                '--tw-prose-code': 'rgb(255 255 255)',
+                                '--tw-prose-pre-code': 'rgb(209 213 219)',
+                                '--tw-prose-pre-bg': 'rgb(17 24 39)',
+                                '--tw-prose-th-borders': 'rgb(75 85 99)',
+                                '--tw-prose-td-borders': 'rgb(55 65 81)'
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -1866,33 +1911,30 @@ function App() {
                             <div key={index} className="bg-teal-900/20 border border-teal-500/30 rounded-xl p-6 hover:bg-teal-900/30 transition-all duration-300">
                               <div className="flex justify-between items-start mb-4">
                                 <div>
-                                  <h5 className="font-semibold text-teal-200 text-lg">{card.name}</h5>
-                                  <p className="text-teal-300 text-sm">Annual Fee: {card.annualFee}</p>
+                                  <h5 className="font-semibold text-teal-200 text-lg mb-2">{card.name}</h5>
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <p className="text-teal-300">Annual Fee: <span className="font-medium">{card.annualFee}</span></p>
+                                    <p className="text-teal-300">Acceptance: <span className="font-medium">{card.acceptance}</span></p>
+                                  </div>
+                                  <p className="text-teal-300 text-sm mt-2">Application: <span className="font-medium">{card.applicationProcess}</span></p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-teal-400 font-bold text-lg">{card.forexMarkup}</p>
-                                  <p className="text-teal-300 text-sm">Forex Markup</p>
+                                  <div className="bg-teal-500/20 text-teal-200 px-4 py-2 rounded-lg border border-teal-500/30">
+                                    <span className="text-sm font-medium">Forex Markup</span>
+                                    <div className="text-lg font-bold">{card.forexMarkup}</div>
+                                  </div>
                                 </div>
                               </div>
                               
                               <div className="space-y-3">
                                 <div>
-                                  <p className="text-teal-300 text-sm font-medium">Features:</p>
+                                  <p className="text-teal-300 text-sm font-medium mb-2">Features:</p>
                                   <div className="flex flex-wrap gap-2 mt-2">
                                     {card.features.map((feature, idx) => (
                                       <span key={idx} className="text-xs bg-teal-500/20 text-teal-300 px-3 py-1 rounded-full border border-teal-500/30">
                                         {feature}
                                       </span>
                                     ))}
-                                  </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                  <div>
-                                    <p className="text-teal-300">Acceptance: <span className="text-teal-200">{card.acceptance}</span></p>
-                                  </div>
-                                  <div>
-                                    <p className="text-teal-300">Application: <span className="text-teal-200">{card.applicationProcess}</span></p>
                                   </div>
                                 </div>
                               </div>
