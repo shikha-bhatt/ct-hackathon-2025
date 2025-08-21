@@ -14,6 +14,11 @@ const CLEARTRIP_CONFIG = {
   daAccount: import.meta.env.VITE_CLEARTRIP_DA_ACCOUNT
 };
 
+// Spring Boot Backend Configuration
+const BACKEND_CONFIG = {
+  baseURL: 'http://localhost:8080/api'
+};
+
 // Azure OpenAI API Service
 export class AzureOpenAIService {
   constructor() {
@@ -174,7 +179,7 @@ export class CleartripAirService {
         // Additional parameters that might be required
         currency: 'INR',
         nationality: 'IN',
-        // Add more parameters as per Cleartrip Air API documentation
+        // Add more parameters as per Cleartrip API documentation
       });
       
       console.log('Flight Search Response:', response.data);
@@ -214,12 +219,131 @@ export class CleartripAirService {
   }
 }
 
+// Spring Boot Backend Service for SIM Information
+export class SimInformationService {
+  constructor() {
+    this.client = axios.create({
+      baseURL: BACKEND_CONFIG.baseURL,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  async getSIMInformation(destination, duration) {
+    try {
+      console.log('🔍 Fetching SIM information from Spring Boot backend...');
+      console.log('Destination:', destination, 'Duration:', duration);
+      
+      const response = await this.client.post('/sim/information', {
+        destination: destination,
+        duration: duration
+      });
+      
+      console.log('✅ SIM information received from backend:', response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('❌ Error fetching SIM information from backend:', error);
+      
+      // Fallback to mock data if backend is not available
+      console.log('🔄 Falling back to mock data...');
+      return this.getMockSIMInformation(destination, duration);
+    }
+  }
+
+  // Fallback mock data if backend is not available
+  getMockSIMInformation(destination, duration) {
+    console.log('🎭 Using mock SIM data for:', destination);
+    
+    return {
+      aiRecommendations: `Based on your trip to ${destination} for ${duration}, here are my recommendations:\n\n` +
+        `**Best Option: Local SIM Card**\n` +
+        `- Most cost-effective for stays longer than 3 days\n` +
+        `- Better network coverage and speeds\n` +
+        `- Local customer support\n\n` +
+        `**Alternative: eSIM**\n` +
+        `- Instant activation\n` +
+        `- No physical SIM needed\n` +
+        `- Good for short trips\n\n` +
+        `**Avoid: International SIMs**\n` +
+        `- Higher costs\n` +
+        `- Limited data\n` +
+        `- Poor customer support`,
+      simOptions: {
+        destination: destination,
+        localCarriers: [
+          {
+            name: 'Local Carrier 1',
+            coverage: 'City-wide',
+            dataPlans: ['2GB - $20', '5GB - $30', '10GB - $40'],
+            price: '$20-40',
+            networkQuality: 'Good',
+            customerSupport: 'Business hours',
+            activationTime: '24 hours'
+          },
+          {
+            name: 'Local Carrier 2',
+            coverage: 'City-wide',
+            dataPlans: ['3GB - $25', '7GB - $35', '15GB - $45'],
+            price: '$25-45',
+            networkQuality: 'Fair',
+            customerSupport: 'Business hours',
+            activationTime: '24 hours'
+          }
+        ],
+        internationalSIMs: [
+          {
+            name: 'Airalo',
+            coverage: 'Global',
+            dataPlans: ['1GB - $4.50', '3GB - $11', '5GB - $16'],
+            price: '$4.50-16',
+            validity: '7-30 days',
+            activationProcess: 'Instant',
+            customerSupport: 'Email'
+          },
+          {
+            name: 'Truphone',
+            coverage: 'Global',
+            dataPlans: ['1GB - $5', '3GB - $12', '5GB - $18'],
+            price: '$5-18',
+            validity: '7-30 days',
+            activationProcess: 'Instant',
+            customerSupport: '24/7'
+          }
+        ],
+        eSIMs: [
+          {
+            name: 'Airalo eSIM',
+            coverage: 'Global',
+            dataPlans: ['1GB - $4.50', '3GB - $11', '5GB - $16'],
+            price: '$4.50-16',
+            compatibility: 'iPhone/Android',
+            activationTime: 'Instant',
+            validity: '7-30 days'
+          },
+          {
+            name: 'Truphone eSIM',
+            coverage: 'Global',
+            dataPlans: ['1GB - $5', '3GB - $12', '5GB - $18'],
+            price: '$5-18',
+            compatibility: 'iPhone/Android',
+            activationTime: 'Instant',
+            validity: '7-30 days'
+          }
+        ]
+      }
+    };
+  }
+}
+
 // Combined Travel Service
 export class TravelService {
   constructor() {
     this.openAI = new AzureOpenAIService();
     this.hotels = new CleartripHotelService();
     this.flights = new CleartripAirService();
+    this.simInfo = new SimInformationService();
   }
 
   async getIntelligentTravelSuggestions(destination, preferences) {
@@ -284,6 +408,11 @@ export class TravelService {
       console.error('Natural Language Search Error:', error);
       throw error;
     }
+  }
+
+  // New method to get SIM information using the Spring Boot backend
+  async getSIMInformation(destination, duration) {
+    return await this.simInfo.getSIMInformation(destination, duration);
   }
 
   parseSearchQuery(aiResponse) {
@@ -392,3 +521,4 @@ export const travelService = new TravelService();
 export const openAIService = new AzureOpenAIService();
 export const hotelService = new CleartripHotelService();
 export const airService = new CleartripAirService();
+export const simInformationService = new SimInformationService();
