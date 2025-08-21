@@ -30,7 +30,9 @@ function App() {
   const [insuranceSearch, setInsuranceSearch] = useState({
     destination: '',
     tripType: '',
-    duration: ''
+    duration: '',
+    startDate: '',
+    endDate: ''
   });
 
   // International Itinerary State
@@ -376,7 +378,7 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Trip Duration
+                      Start Date
                     </label>
                     <input
                       type="date"
@@ -384,11 +386,14 @@ function App() {
                       onChange={(e) => setSimSearch({...simSearch, startDate: e.target.value})}
                       className="input-field"
                     />
+                    <label className="block text-sm font-medium text-gray-300 mb-3 mt-3">
+                      End Date
+                    </label>
                     <input
                       type="date"
                       value={simSearch.endDate}
                       onChange={(e) => setSimSearch({...simSearch, endDate: e.target.value})}
-                      className="input-field mt-2"
+                      className="input-field"
                     />
                   </div>
                   <button
@@ -504,13 +509,19 @@ function App() {
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Destination
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={insuranceSearch.destination}
                       onChange={(e) => setInsuranceSearch({...insuranceSearch, destination: e.target.value})}
-                      placeholder="e.g., USA, Europe, Asia"
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a country</option>
+                      <option value="USA">USA</option>
+                      <option value="UK">UK</option>
+                      <option value="Japan">Japan</option>
+                      <option value="India">India</option>
+                      <option value="Australia">Australia</option>
+                      {/* Add more countries as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -531,13 +542,21 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Trip Duration
+                      Start Date
                     </label>
                     <input
-                      type="text"
-                      value={insuranceSearch.duration}
-                      onChange={(e) => setInsuranceSearch({...insuranceSearch, duration: e.target.value})}
-                      placeholder="e.g., 7 days, 2 weeks, 1 month"
+                      type="date"
+                      value={insuranceSearch.startDate}
+                      onChange={(e) => setInsuranceSearch({...insuranceSearch, startDate: e.target.value})}
+                      className="input-field"
+                    />
+                    <label className="block text-sm font-medium text-gray-300 mb-3 mt-3">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={insuranceSearch.endDate}
+                      onChange={(e) => setInsuranceSearch({...insuranceSearch, endDate: e.target.value})}
                       className="input-field"
                     />
                   </div>
