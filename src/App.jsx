@@ -25,15 +25,6 @@ function App() {
     purpose: ''
   });
 
-  // Insurance Information State
-  const [insuranceSearch, setInsuranceSearch] = useState({
-    destination: '',
-    tripType: '',
-    duration: '',
-    startDate: '',
-    endDate: ''
-  });
-
   // International Itinerary State
   const [itinerarySearch, setItinerarySearch] = useState({
     destination: '',
@@ -207,23 +198,6 @@ function App() {
     }
   };
 
-  const handleInsuranceSearch = async () => {
-    if (!insuranceSearch.destination.trim() || !insuranceSearch.tripType.trim() || !insuranceSearch.duration.trim()) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const insuranceInfo = await travelService.getInsuranceInformation(insuranceSearch.destination, insuranceSearch.tripType, insuranceSearch.duration);
-      setResults(insuranceInfo);
-    } catch (err) {
-      setError('Failed to get insurance information. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleItinerarySearch = async () => {
     if (!itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()) return;
     
@@ -323,7 +297,6 @@ function App() {
               { id: 'ai-assistant', label: 'AI Travel Assistant', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
               { id: 'sim-info', label: 'SIM Information', icon: Smartphone, color: 'from-blue-500 to-cyan-500' },
               { id: 'visa-info', label: 'Visa Information', icon: FileCheck, color: 'from-green-500 to-emerald-500' },
-              { id: 'insurance-info', label: 'Insurance Information', icon: Shield, color: 'from-orange-500 to-red-500' },
               { id: 'itinerary', label: 'International Itinerary', icon: Route, color: 'from-indigo-500 to-purple-500' },
               { id: 'forex', label: 'Forex Exchange', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
               { id: 'zero-forex', label: 'Zero-Forex Cards', icon: CreditCard, color: 'from-teal-500 to-green-500' }
@@ -569,89 +542,6 @@ function App() {
                       <div className="flex items-center justify-center space-x-2">
                         <FileCheck className="w-5 h-5" />
                         <span>Get Visa Information</span>
-                      </div>
-                    )}
-                  </button>
-                </div>
-              )}
-
-              {activeTab === 'insurance-info' && (
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold gradient-text">Insurance Information</h3>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Destination
-                    </label>
-                    <select
-                      value={insuranceSearch.destination}
-                      onChange={(e) => setInsuranceSearch({...insuranceSearch, destination: e.target.value})}
-                      className="input-field"
-                    >
-                      <option value="">Select a country</option>
-                      <option value="USA">USA</option>
-                      <option value="UK">UK</option>
-                      <option value="Japan">Japan</option>
-                      <option value="India">India</option>
-                      <option value="Australia">Australia</option>
-                      {/* Add more countries as needed */}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Trip Type
-                    </label>
-                    <select
-                      value={insuranceSearch.tripType}
-                      onChange={(e) => setInsuranceSearch({...insuranceSearch, tripType: e.target.value})}
-                      className="input-field"
-                    >
-                      <option value="">Select trip type</option>
-                      <option value="Leisure">Leisure</option>
-                      <option value="Business">Business</option>
-                      <option value="Adventure">Adventure</option>
-                      <option value="Family">Family</option>
-                      <option value="Solo">Solo</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      value={insuranceSearch.startDate}
-                      onChange={(e) => setInsuranceSearch({...insuranceSearch, startDate: e.target.value})}
-                      className="input-field"
-                    />
-                    <label className="block text-sm font-medium text-gray-300 mb-3 mt-3">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      value={insuranceSearch.endDate}
-                      onChange={(e) => setInsuranceSearch({...insuranceSearch, endDate: e.target.value})}
-                      className="input-field"
-                    />
-                  </div>
-                  <button
-                    onClick={handleInsuranceSearch}
-                    disabled={loading || !insuranceSearch.destination.trim() || !insuranceSearch.tripType || !insuranceSearch.duration.trim()}
-                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Getting Insurance Information...</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center space-x-2">
-                        <Shield className="w-5 h-5" />
-                        <span>Get Insurance Information</span>
                       </div>
                     )}
                   </button>
@@ -1194,59 +1084,6 @@ function App() {
                     </div>
                   )}
 
-                  {/* Insurance Information Results */}
-                  {results.aiRecommendations && results.insurancePlans && (
-                    <div className="card">
-                      <div className="flex items-center space-x-3 mb-6">
-                        <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                          <Shield className="w-4 h-4 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold gradient-text">Insurance Information for {results.insurancePlans.data.destination}</h3>
-                      </div>
-                      
-                      {/* AI Recommendations */}
-                      <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Recommendations</h4>
-                        <div className="prose prose-invert max-w-none">
-                          <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
-                            {results.aiRecommendations}
-                          </pre>
-                        </div>
-                      </div>
-
-                      {/* Insurance Plans */}
-                      <div className="space-y-6">
-                        <h4 className="text-lg font-semibold text-gray-200">Available Insurance Plans</h4>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {results.insurancePlans.data.plans.map((plan, index) => (
-                            <div key={index} className="bg-orange-900/20 border border-orange-500/30 rounded-xl p-6 hover:bg-orange-900/30 transition-all duration-300">
-                              <div className="text-center mb-4">
-                                <h5 className="font-semibold text-orange-200 text-lg">{plan.name}</h5>
-                                <p className="text-orange-400 text-2xl font-bold">{plan.premium}</p>
-                                <p className="text-orange-300 text-sm">Coverage: {plan.coverageAmount}</p>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <p className="text-orange-300 text-sm font-medium">Coverage Includes:</p>
-                                {plan.coverage.map((item, idx) => (
-                                  <div key={idx} className="flex items-center space-x-2">
-                                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                                    <span className="text-orange-300 text-sm">{item}</span>
-                                  </div>
-                                ))}
-                              </div>
-                              
-                              <button className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
-                                Get Quote
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   {/* International Itinerary Results */}
                   {results.itinerary && (
                     <div className="card">
@@ -1409,7 +1246,7 @@ function App() {
                       Ready to explore?
                     </h3>
                     <p className="text-gray-400 text-lg">
-                      Use the search panel on the left to get travel information, SIM details, visa requirements, insurance plans, itineraries, forex rates, and zero-forex credit cards.
+                      Use the search panel on the left to get travel information, SIM details, visa requirements, itineraries, forex rates, and zero-forex credit cards.
                     </p>
                   </div>
                 </div>
