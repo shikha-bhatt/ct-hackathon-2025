@@ -39,7 +39,9 @@ function App() {
   const [itinerarySearch, setItinerarySearch] = useState({
     destination: '',
     duration: '',
-    interests: ''
+    interests: '',
+    startDate: '',
+    endDate: ''
   });
 
   // Forex Information State
@@ -622,6 +624,26 @@ function App() {
                       placeholder="e.g., History, Food, Adventure, Culture, Shopping"
                       className="input-field"
                       rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      value={itinerarySearch.startDate}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, startDate: e.target.value})}
+                      className="input-field"
+                    />
+                    <label className="block text-sm font-medium text-gray-300 mb-3 mt-3">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={itinerarySearch.endDate}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, endDate: e.target.value})}
+                      className="input-field"
                     />
                   </div>
                   <button
