@@ -161,4 +161,65 @@ public class AzureOpenAIService {
 
         return getChatCompletion(messages);
     }
+
+    public Mono<String> getVisaInformation(String destination, String purposeOfVisit, String nationality) {
+        String systemPrompt = """
+            You are a visa and immigration expert specializing in international travel visas for Indian citizens. 
+            Provide comprehensive, accurate, and up-to-date information about visa requirements, 
+            application processes, and travel documentation. Include specific details about processing times, 
+            fees, required documents, and provide actionable recommendations.
+            
+            Format your response in a structured way with clear sections for:
+            1. Visa Type and Requirements
+            2. Minimum Application Time (when to apply before travel)
+            3. Required Documents (complete list with specifications)
+            4. Official Application Website (authentic government portals)
+            5. Estimated Processing Time (realistic timelines)
+            6. Visa Fees (current rates in INR and USD)
+            7. Application Process Steps
+            8. Important Notes and Tips
+            9. Common Rejection Reasons
+            10. Emergency Contact Information
+            11. Travel Insurance Requirements
+            12. COVID-19 Related Requirements (if applicable)
+            
+            Be specific about the destination, purpose of visit, and provide real, actionable information 
+            that would help an Indian traveler make informed decisions. Include official government websites 
+            and current fee structures.
+            """;
+
+        String userPrompt = String.format("""
+            I'm an Indian citizen planning to travel to %s for %s. 
+            Please provide comprehensive visa information including:
+            
+            1. What type of visa do I need for %s purpose to %s?
+            2. What's the minimum time I should apply before my travel date?
+            3. What documents are required for the visa application?
+            4. What's the official website to apply for the visa?
+            5. How long does the visa processing typically take?
+            6. What are the current visa fees in INR and USD?
+            7. What's the step-by-step application process?
+            8. Any important notes or tips for Indian applicants?
+            9. What are common reasons for visa rejection?
+            10. Any emergency contact information?
+            11. Is travel insurance required?
+            12. Any COVID-19 related requirements?
+            
+            Please provide comprehensive, detailed information that would help an Indian traveler 
+            successfully apply for and obtain a visa for %s.
+            """, destination, purposeOfVisit, purposeOfVisit, destination, destination);
+
+        List<AzureOpenAIRequest.Message> messages = List.of(
+                AzureOpenAIRequest.Message.builder()
+                        .role("system")
+                        .content(systemPrompt)
+                        .build(),
+                AzureOpenAIRequest.Message.builder()
+                        .role("user")
+                        .content(userPrompt)
+                        .build()
+        );
+
+        return getChatCompletion(messages);
+    }
 } 

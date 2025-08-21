@@ -616,6 +616,172 @@ Potential savings on ₹50,000 spending: ₹1,500-2,500`,
       });
     }
   }
+
+  async getVisaInformation(destination, purposeOfVisit) {
+    try {
+      const response = await axios.post('http://localhost:8080/api/visa-information/info', {
+        destination: destination,
+        purposeOfVisit: purposeOfVisit,
+        nationality: 'Indian'
+      });
+      
+      // Transform the backend response to match frontend expectations
+      const backendData = response.data;
+      return {
+        aiRecommendations: backendData.visaInformation,
+        visaRequirements: {
+          data: backendData.visaRequirementsData
+        },
+        destination: backendData.destination,
+        purposeOfVisit: backendData.purposeOfVisit,
+        nationality: backendData.nationality
+      };
+    } catch (error) {
+      console.error('Error fetching visa information:', error);
+      // Fallback to mock data if backend is not available
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            aiRecommendations: `Visa Information for ${destination} (${purposeOfVisit}):
+
+**Visa Type and Requirements:**
+- Visa Type: Tourist/Business Visa (as applicable)
+- Validity: 3 months to 1 year (depending on purpose)
+- Entry Type: Single/Multiple entry
+
+**Minimum Application Time:**
+- Apply at least 4-6 weeks before your travel date
+- Peak season: Apply 8-10 weeks in advance
+- Emergency processing available (additional fees)
+
+**Required Documents:**
+1. **Passport**
+   - Valid for at least 6 months beyond stay
+   - At least 2 blank pages
+   - Not damaged or mutilated
+
+2. **Visa Application Form**
+   - Completed and signed
+   - Recent passport-size photographs (2-4 copies)
+
+3. **Financial Documents**
+   - Bank statements (last 3-6 months)
+   - Income tax returns
+   - Employment letter (if employed)
+
+4. **Travel Documents**
+   - Flight itinerary
+   - Hotel reservations
+   - Travel insurance
+
+5. **Additional Documents**
+   - Cover letter explaining purpose of visit
+   - Invitation letter (if visiting friends/family)
+   - Business documents (for business visits)
+
+**Official Application Website:**
+- Primary: Official government visa portal
+- Alternative: Authorized visa service providers
+- Avoid third-party websites
+
+**Estimated Processing Time:**
+- Standard processing: 15-30 business days
+- Express processing: 5-10 business days
+- Emergency processing: 1-3 business days
+
+**Visa Fees:**
+- Standard visa: ₹2,000 - ₹5,000
+- Express processing: Additional ₹1,000 - ₹2,000
+- Service charges: ₹500 - ₹1,000
+
+**Application Process Steps:**
+1. Visit official website
+2. Fill online application form
+3. Upload required documents
+4. Pay visa fees
+5. Schedule appointment (if required)
+6. Submit application
+7. Track application status
+8. Collect visa
+
+**Important Notes:**
+- Keep copies of all documents
+- Ensure all information is accurate
+- Apply well in advance
+- Check for any travel advisories
+- Verify visa requirements before travel
+
+**Common Rejection Reasons:**
+- Incomplete documentation
+- Insufficient funds
+- Previous visa violations
+- Criminal record
+- Inconsistent information
+
+**Emergency Contact:**
+- Embassy/Consulate: [Contact details]
+- Emergency helpline: [Phone number]
+- Email support: [Email address]
+
+**Travel Insurance:**
+- Required for most destinations
+- Minimum coverage: $50,000
+- Should cover medical expenses and repatriation
+
+**COVID-19 Requirements:**
+- Vaccination certificate (if required)
+- Negative test results (if required)
+- Quarantine requirements (if applicable)
+- Health declaration forms`,
+            visaRequirements: {
+              data: {
+                destination: destination,
+                visaTypes: [
+                  {
+                    type: "Tourist Visa",
+                    validity: "3-6 months",
+                    processingTime: "15-30 days",
+                    fee: "₹2,000 - ₹5,000"
+                  },
+                  {
+                    type: "Business Visa",
+                    validity: "6-12 months",
+                    processingTime: "10-20 days",
+                    fee: "₹3,000 - ₹7,000"
+                  }
+                ],
+                requiredDocuments: [
+                  "Valid passport (6+ months validity)",
+                  "Visa application form",
+                  "Passport-size photographs (2-4 copies)",
+                  "Bank statements (last 3-6 months)",
+                  "Income tax returns",
+                  "Employment letter (if employed)",
+                  "Flight itinerary",
+                  "Hotel reservations",
+                  "Travel insurance",
+                  "Cover letter explaining purpose of visit"
+                ],
+                applicationProcess: [
+                  "Visit official government visa portal",
+                  "Fill online application form",
+                  "Upload required documents",
+                  "Pay visa fees online",
+                  "Schedule appointment (if required)",
+                  "Submit application at visa center",
+                  "Track application status online",
+                  "Collect visa from center or courier"
+                ]
+              }
+            },
+            destination: destination,
+            purposeOfVisit: purposeOfVisit,
+            nationality: 'Indian'
+          });
+        }, 2000);
+      });
+    }
+  }
 }
 
 // Export instances for easy use
