@@ -56,7 +56,8 @@ function App() {
     destination: '',
     numberOfStops: 0,
     timePreference: '',
-    layoverDuration: ''
+    layoverDuration: '',
+    origin: ''
   });
 
   // Function to format AI recommendations
@@ -283,7 +284,7 @@ function App() {
     setError(null);
     
     try {
-      const routeInfo = await travelService.getRouteInformation(routeSearch.destination, routeSearch.numberOfStops, routeSearch.timePreference, routeSearch.layoverDuration);
+      const routeInfo = await travelService.getRouteInformation(routeSearch.origin, routeSearch.destination, routeSearch.numberOfStops, routeSearch.timePreference, routeSearch.layoverDuration);
       setResults(routeInfo);
     } catch (err) {
       setError('Failed to get route information. Please try again.');
@@ -706,15 +707,40 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Origin
+                    </label>
+                    <select
+                      value={routeSearch.origin}
+                      onChange={(e) => setRouteSearch({...routeSearch, origin: e.target.value})}
+                      className="input-field"
+                    >
+                      <option value="">Select a city</option>
+                      <option value="Chennai">Chennai</option>
+                      <option value="Kolkata">Kolkata</option>
+                      <option value="Hyderabad">Hyderabad</option>
+                      <option value="Bengaluru">Bengaluru</option>
+                      <option value="Ahmedabad">Ahmedabad</option>
+                      <option value="Mumbai">Mumbai</option>
+                      {/* Add more cities as needed */}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
                       Destination
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={routeSearch.destination}
                       onChange={(e) => setRouteSearch({...routeSearch, destination: e.target.value})}
-                      placeholder="e.g., Paris, Tokyo, New York"
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a city</option>
+                      <option value="New York">New York</option>
+                      <option value="London">London</option>
+                      <option value="Tokyo">Tokyo</option>
+                      <option value="Dubai">Dubai</option>
+                      <option value="Sydney">Sydney</option>
+                      {/* Add more cities as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -765,7 +791,7 @@ function App() {
                   </div>
                   <button
                     onClick={handleRouteSearch}
-                    disabled={loading || !routeSearch.destination.trim() || !routeSearch.timePreference || !routeSearch.layoverDuration}
+                    disabled={loading || !routeSearch.origin.trim() || !routeSearch.destination.trim() || !routeSearch.timePreference || !routeSearch.layoverDuration}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
@@ -1260,6 +1286,10 @@ function App() {
                         <div className="bg-violet-900/20 border border-violet-500/30 rounded-xl p-6">
                           <h4 className="text-lg font-semibold text-violet-200 mb-4">Route Summary</h4>
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="text-center">
+                              <p className="text-violet-300 text-sm">Origin</p>
+                              <p className="text-violet-200 font-semibold">{results.origin}</p>
+                            </div>
                             <div className="text-center">
                               <p className="text-violet-300 text-sm">Destination</p>
                               <p className="text-violet-200 font-semibold">{results.destination}</p>
