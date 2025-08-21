@@ -617,6 +617,189 @@ Potential savings on ₹50,000 spending: ₹1,500-2,500`,
     }
   }
 
+  async getRouteInformation(destination, numberOfStops, timePreference, layoverDuration) {
+    try {
+      const response = await axios.post('http://localhost:8080/api/route-planning/info', {
+        destination: destination,
+        numberOfStops: numberOfStops,
+        timePreference: timePreference,
+        layoverDuration: layoverDuration
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching route information:', error);
+      // Fallback to mock data if backend is not available
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            routeInfo: true,
+            destination: destination,
+            numberOfStops: numberOfStops,
+            timePreference: timePreference,
+            layoverDuration: layoverDuration,
+            aiRecommendations: `Route Planning Analysis for ${destination}:
+
+**Route Optimization for ${numberOfStops} ${numberOfStops === 1 ? 'Stop' : 'Stops'} with ${layoverDuration} layover:**
+
+**Best Time Windows for ${timePreference}:**
+- Optimal departure times based on your preference
+- Connection timing considerations
+- Layover duration recommendations
+
+**Layover Duration Analysis (${layoverDuration}):**
+${layoverDuration === 'short' ? `
+- **Short Layovers (1-3 hours):**
+  - Quick connections, minimal waiting time
+  - Best for experienced travelers
+  - Risk of missing connection if flight is delayed
+  - Limited time for airport amenities` :
+layoverDuration === 'medium' ? `
+- **Medium Layovers (3-6 hours):**
+  - Balanced approach for comfort and efficiency
+  - Time for meals, shopping, and rest
+  - Buffer time for flight delays
+  - Good for families and leisure travelers` :
+layoverDuration === 'long' ? `
+- **Long Layovers (6-12 hours):**
+  - Extended rest periods between flights
+  - Opportunity to explore the connecting city
+  - Time for airport lounges and amenities
+  - Best for long-haul international travel` :
+`
+- **Overnight Layovers (12+ hours):**
+  - Full rest period between flights
+  - Opportunity for city exploration
+  - May require transit visa
+  - Best for reducing jet lag`}
+
+**Route Recommendations:**
+
+1. **Direct Routes (0 Stops)**
+   - Fastest travel time
+   - Higher cost but maximum convenience
+   - Best for business travelers
+
+2. **One-Stop Routes**
+   - Good balance of cost and time
+   - Reasonable layover durations
+   - Popular choice for leisure travelers
+
+3. **Two-Stop Routes**
+   - Most economical option
+   - Longer total travel time
+   - Good for budget-conscious travelers
+
+**Time Preference Analysis:**
+- ${timePreference} flights typically have ${timePreference === 'early-morning' ? 'lower prices and less crowded airports' : 
+  timePreference === 'morning' ? 'good availability and reasonable prices' :
+  timePreference === 'afternoon' ? 'moderate prices and good connection options' :
+  timePreference === 'evening' ? 'higher prices but convenient arrival times' :
+  'variable pricing depending on destination'}
+
+**Layover Strategy for ${layoverDuration} Preference:**
+${layoverDuration === 'short' ? `
+- Book flights with minimal connection time
+- Choose major hub airports for better connections
+- Have backup plans for missed connections
+- Pack essentials in carry-on luggage` :
+layoverDuration === 'medium' ? `
+- Look for routes with 3-6 hour connections
+- Choose airports with good amenities
+- Plan for meals and rest during layover
+- Consider airport lounge access` :
+layoverDuration === 'long' ? `
+- Select routes with extended layover periods
+- Research airport and city attractions
+- Check visa requirements for layover country
+- Plan for comfortable rest and exploration` :
+`
+- Consider overnight layover packages
+- Research hotel options near airport
+- Check transit visa requirements
+- Plan for city exploration if time permits`}
+
+**Tips for ${numberOfStops > 0 ? 'Multi-Stop' : 'Direct'} Travel:**
+${numberOfStops === 0 ? `
+- Book early for best prices
+- Consider premium economy for comfort
+- Check baggage allowance carefully` :
+numberOfStops === 1 ? `
+- Allow minimum 2-3 hours for connections
+- Check visa requirements for stopover country
+- Pack essentials in carry-on for layovers` :
+`
+- Plan for longer total travel time
+- Check multiple connection options
+- Consider overnight layovers for rest`}
+
+**Cost Considerations:**
+- Direct flights: 20-40% more expensive
+- One-stop: Best value for money
+- Two-stop: Most economical but longest duration
+- ${layoverDuration === 'short' ? 'Short layovers may cost more due to premium timing' :
+  layoverDuration === 'medium' ? 'Medium layovers offer best price-performance ratio' :
+  layoverDuration === 'long' ? 'Long layovers often reduce total ticket cost' :
+  'Overnight layovers may require additional accommodation costs'}
+
+**Booking Recommendations:**
+- Book 3-6 months in advance for best prices
+- Be flexible with dates for better deals
+- Consider alternative airports nearby
+- Check for seasonal route availability
+- ${layoverDuration !== 'short' ? 'Research layover city attractions and visa requirements' : 'Ensure quick connection times for short layovers'}`,
+            routeOptions: [
+              {
+                airline: "Emirates",
+                price: "$1,200",
+                duration: "14h 30m",
+                departure: "2:30 AM",
+                arrival: "5:00 PM",
+                stops: numberOfStops,
+                layoverTime: layoverDuration === 'short' ? "2h 15m" : layoverDuration === 'medium' ? "4h 30m" : layoverDuration === 'long' ? "8h 45m" : "14h 20m",
+                stopDetails: numberOfStops > 0 ? [
+                  {
+                    airport: "DXB (Dubai)",
+                    duration: layoverDuration === 'short' ? "2h 15m" : layoverDuration === 'medium' ? "4h 30m" : layoverDuration === 'long' ? "8h 45m" : "14h 20m"
+                  }
+                ] : null
+              },
+              {
+                airline: "Qatar Airways",
+                price: "$1,150",
+                duration: "16h 15m",
+                departure: "8:45 AM",
+                arrival: "11:15 PM",
+                stops: numberOfStops,
+                layoverTime: layoverDuration === 'short' ? "1h 45m" : layoverDuration === 'medium' ? "3h 20m" : layoverDuration === 'long' ? "7h 15m" : "12h 30m",
+                stopDetails: numberOfStops > 0 ? [
+                  {
+                    airport: "DOH (Doha)",
+                    duration: layoverDuration === 'short' ? "1h 45m" : layoverDuration === 'medium' ? "3h 20m" : layoverDuration === 'long' ? "7h 15m" : "12h 30m"
+                  }
+                ] : null
+              },
+              {
+                airline: "Lufthansa",
+                price: "$1,350",
+                duration: "12h 45m",
+                departure: "4:15 PM",
+                arrival: "7:00 AM",
+                stops: numberOfStops,
+                layoverTime: layoverDuration === 'short' ? "2h 30m" : layoverDuration === 'medium' ? "5h 15m" : layoverDuration === 'long' ? "9h 30m" : "16h 45m",
+                stopDetails: numberOfStops > 0 ? [
+                  {
+                    airport: "FRA (Frankfurt)",
+                    duration: layoverDuration === 'short' ? "2h 30m" : layoverDuration === 'medium' ? "5h 15m" : layoverDuration === 'long' ? "9h 30m" : "16h 45m"
+                  }
+                ] : null
+              }
+            ]
+          });
+        }, 2000);
+      });
+    }
+  }
+
   async getVisaInformation(destination, purposeOfVisit) {
     try {
       const response = await axios.post('http://localhost:8080/api/visa-information/info', {

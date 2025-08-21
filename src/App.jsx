@@ -46,6 +46,14 @@ function App() {
     destination: ''
   });
 
+  // Route Planning State
+  const [routeSearch, setRouteSearch] = useState({
+    destination: '',
+    numberOfStops: 0,
+    timePreference: '',
+    layoverDuration: ''
+  });
+
   // Function to format AI recommendations
   const formatAIRecommendations = (text) => {
     if (!text) return '';
@@ -249,6 +257,23 @@ function App() {
     }
   };
 
+  const handleRouteSearch = async () => {
+    if (!routeSearch.destination.trim()) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const routeInfo = await travelService.getRouteInformation(routeSearch.destination, routeSearch.numberOfStops, routeSearch.timePreference, routeSearch.layoverDuration);
+      setResults(routeInfo);
+    } catch (err) {
+      setError('Failed to get route information. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Cleartrip Watermark */}
@@ -295,8 +320,10 @@ function App() {
           <div className="flex space-x-1">
             {[
               { id: 'ai-assistant', label: 'AI Travel Assistant', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
+              { id: 'route', label: 'Route Planning', icon: MapPin, color: 'from-violet-500 to-purple-500' },
               { id: 'sim-info', label: 'SIM Information', icon: Smartphone, color: 'from-blue-500 to-cyan-500' },
               { id: 'visa-info', label: 'Visa Information', icon: FileCheck, color: 'from-green-500 to-emerald-500' },
+              { id: 'insurance-info', label: 'Insurance Information', icon: Shield, color: 'from-orange-500 to-red-500' },
               { id: 'itinerary', label: 'International Itinerary', icon: Route, color: 'from-indigo-500 to-purple-500' },
               { id: 'forex', label: 'Forex Exchange', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
               { id: 'zero-forex', label: 'Zero-Forex Cards', icon: CreditCard, color: 'from-teal-500 to-green-500' }
@@ -638,6 +665,93 @@ function App() {
                       <div className="flex items-center justify-center space-x-2">
                         <Route className="w-5 h-5" />
                         <span>Generate Itinerary</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {activeTab === 'route' && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold gradient-text">Route Planning</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Destination
+                    </label>
+                    <input
+                      type="text"
+                      value={routeSearch.destination}
+                      onChange={(e) => setRouteSearch({...routeSearch, destination: e.target.value})}
+                      placeholder="e.g., Paris, Tokyo, New York"
+                      className="input-field"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Number of Stops
+                    </label>
+                    <select
+                      value={routeSearch.numberOfStops}
+                      onChange={(e) => setRouteSearch({...routeSearch, numberOfStops: parseInt(e.target.value)})}
+                      className="input-field"
+                    >
+                      <option value={0}>0 Stops (Direct)</option>
+                      <option value={1}>1 Stop</option>
+                      <option value={2}>2 Stops</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Preferred Time
+                    </label>
+                    <select
+                      value={routeSearch.timePreference}
+                      onChange={(e) => setRouteSearch({...routeSearch, timePreference: e.target.value})}
+                      className="input-field"
+                    >
+                      <option value="">Select time preference</option>
+                      <option value="early-morning">Early Morning (12AM - 8AM)</option>
+                      <option value="morning">Morning (8AM - 12PM)</option>
+                      <option value="afternoon">Afternoon (12PM - 4PM)</option>
+                      <option value="evening">Evening (4PM - 8PM)</option>
+                      <option value="night">Night (8PM - 12AM)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Expected Layover Duration
+                    </label>
+                    <select
+                      value={routeSearch.layoverDuration}
+                      onChange={(e) => setRouteSearch({...routeSearch, layoverDuration: e.target.value})}
+                      className="input-field"
+                    >
+                      <option value="">Select layover preference</option>
+                      <option value="short">Short (1-3 hours)</option>
+                      <option value="medium">Medium (3-6 hours)</option>
+                      <option value="long">Long (6-12 hours)</option>
+                      <option value="overnight">Overnight (12+ hours)</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={handleRouteSearch}
+                    disabled={loading || !routeSearch.destination.trim() || !routeSearch.timePreference || !routeSearch.layoverDuration}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Planning Route...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center space-x-2">
+                        <MapPin className="w-5 h-5" />
+                        <span>Plan Route</span>
                       </div>
                     )}
                   </button>
@@ -1100,6 +1214,118 @@ function App() {
                         <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
                           {results.itinerary}
                         </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Route Planning Results */}
+                  {results.routeInfo && (
+                    <div className="card">
+                      <div className="flex items-center space-x-3 mb-6">
+                        <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center">
+                          <MapPin className="w-4 h-4 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold gradient-text">
+                          Route Planning for {results.destination}
+                        </h3>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        {/* Route Summary */}
+                        <div className="bg-violet-900/20 border border-violet-500/30 rounded-xl p-6">
+                          <h4 className="text-lg font-semibold text-violet-200 mb-4">Route Summary</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="text-center">
+                              <p className="text-violet-300 text-sm">Destination</p>
+                              <p className="text-violet-200 font-semibold">{results.destination}</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-violet-300 text-sm">Stops</p>
+                              <p className="text-violet-200 font-semibold">{results.numberOfStops} {results.numberOfStops === 1 ? 'Stop' : 'Stops'}</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-violet-300 text-sm">Preferred Time</p>
+                              <p className="text-violet-200 font-semibold">{results.timePreference}</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-violet-300 text-sm">Layover Duration</p>
+                              <p className="text-violet-200 font-semibold">{results.layoverDuration}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* AI Recommendations */}
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-200 mb-3">AI Route Recommendations</h4>
+                          <div className="prose prose-invert max-w-none">
+                            <pre className="ai-response-box whitespace-pre-wrap text-gray-300 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                              {results.aiRecommendations}
+                            </pre>
+                          </div>
+                        </div>
+
+                        {/* Route Options */}
+                        {results.routeOptions && (
+                          <div>
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">Available Routes</h4>
+                            <div className="space-y-4">
+                              {results.routeOptions.map((route, index) => (
+                                <div key={index} className="bg-violet-900/20 border border-violet-500/30 rounded-xl p-6 hover:bg-violet-900/30 transition-all duration-300">
+                                  <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                      <h5 className="font-semibold text-violet-200 text-lg">Route {index + 1}</h5>
+                                      <p className="text-violet-300 text-sm">{route.airline}</p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-violet-400 font-bold text-lg">{route.price}</p>
+                                      <p className="text-violet-300 text-sm">{route.duration}</p>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <div className="text-center">
+                                        <p className="text-violet-300 text-sm">Departure</p>
+                                        <p className="text-violet-200 font-semibold">{route.departure}</p>
+                                      </div>
+                                      <div className="flex-1 mx-4">
+                                        <div className="border-t border-violet-600 relative">
+                                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                            <div className="w-3 h-3 bg-violet-400 rounded-full"></div>
+                                          </div>
+                                        </div>
+                                        <p className="text-center text-sm text-violet-300 mt-2">{route.stops} {route.stops === 1 ? 'Stop' : 'Stops'}</p>
+                                      </div>
+                                      <div className="text-center">
+                                        <p className="text-violet-300 text-sm">Arrival</p>
+                                        <p className="text-violet-200 font-semibold">{route.arrival}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {route.stops > 0 && route.stopDetails && (
+                                      <div className="mt-4">
+                                        <p className="text-violet-300 text-sm font-medium mb-2">Stop Details:</p>
+                                        <div className="space-y-2">
+                                          {route.stopDetails.map((stop, stopIndex) => (
+                                            <div key={stopIndex} className="bg-violet-800/30 border border-violet-600/30 rounded-lg p-3">
+                                              <p className="text-violet-200 text-sm">
+                                                <span className="font-medium">{stop.airport}</span> - {stop.duration} layover
+                                              </p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  <button className="w-full mt-4 bg-violet-500 hover:bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                                    Select Route
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
