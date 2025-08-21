@@ -15,7 +15,8 @@ function App() {
   // SIM Information State
   const [simSearch, setSimSearch] = useState({
     destination: '',
-    duration: ''
+    startDate: '',
+    endDate: ''
   });
 
   // Visa Information State
@@ -75,7 +76,7 @@ function App() {
   };
 
   const handleSIMSearch = async () => {
-    if (!simSearch.destination.trim() || !simSearch.duration.trim()) return;
+    if (!simSearch.destination.trim() || !simSearch.startDate.trim() || !simSearch.endDate.trim()) return;
     
     setLoading(true);
     setError(null);
@@ -359,29 +360,40 @@ function App() {
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Destination
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={simSearch.destination}
                       onChange={(e) => setSimSearch({...simSearch, destination: e.target.value})}
-                      placeholder="e.g., USA, UK, Japan"
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a country</option>
+                      <option value="USA">USA</option>
+                      <option value="UK">UK</option>
+                      <option value="Japan">Japan</option>
+                      <option value="India">India</option>
+                      <option value="Australia">Australia</option>
+                      {/* Add more countries as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Trip Duration
                     </label>
                     <input
-                      type="text"
-                      value={simSearch.duration}
-                      onChange={(e) => setSimSearch({...simSearch, duration: e.target.value})}
-                      placeholder="e.g., 7 days, 2 weeks"
+                      type="date"
+                      value={simSearch.startDate}
+                      onChange={(e) => setSimSearch({...simSearch, startDate: e.target.value})}
                       className="input-field"
+                    />
+                    <input
+                      type="date"
+                      value={simSearch.endDate}
+                      onChange={(e) => setSimSearch({...simSearch, endDate: e.target.value})}
+                      className="input-field mt-2"
                     />
                   </div>
                   <button
                     onClick={handleSIMSearch}
-                    disabled={loading || !simSearch.destination.trim() || !simSearch.duration.trim()}
+                    disabled={loading || !simSearch.destination || !simSearch.startDate || !simSearch.endDate}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
