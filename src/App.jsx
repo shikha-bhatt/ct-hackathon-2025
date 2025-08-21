@@ -1105,13 +1105,13 @@ function App() {
                   )}
 
                   {/* Forex Information Results */}
-                  {results.aiRecommendations && results.exchangeRates && (
+                  {results.aiRecommendations && results.destination && (
                     <div className="card">
                       <div className="flex items-center space-x-3 mb-6">
                         <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
                           <DollarSign className="w-4 h-4 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold gradient-text">Forex Information for {results.exchangeRates.data.destination}</h3>
+                        <h3 className="text-xl font-bold gradient-text">Forex Information for {results.destination}</h3>
                       </div>
                       
                       {/* AI Recommendations */}
@@ -1124,42 +1124,99 @@ function App() {
                         </div>
                       </div>
 
-                      {/* Exchange Rates */}
+                      {/* Exchange Details */}
                       <div className="space-y-6">
-                        <h4 className="text-lg font-semibold text-gray-200">Current Exchange Rates</h4>
+                        <h4 className="text-lg font-semibold text-gray-200">Exchange Details</h4>
                         
+                        {/* Exchange Rate Summary */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {Object.entries(results.exchangeRates.data.rates).map(([currency, data]) => (
-                            <div key={currency} className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 text-center">
-                              <h5 className="font-semibold text-yellow-200 text-lg">{currency}</h5>
-                              <p className="text-yellow-400 text-2xl font-bold">{data.rate}</p>
-                              <div className={`text-sm ${data.trend === 'up' ? 'text-green-400' : data.trend === 'down' ? 'text-red-400' : 'text-gray-400'}`}>
-                                {data.change}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Exchange Options */}
-                        <div>
-                          <h5 className="font-semibold text-yellow-200 mb-3">Exchange Options</h5>
-                          <div className="space-y-3">
-                            {results.exchangeRates.data.exchangeOptions.map((option, index) => (
-                              <div key={index} className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
-                                <div className="flex justify-between items-center">
-                                  <div>
-                                    <h6 className="font-semibold text-yellow-200">{option.type}</h6>
-                                    <p className="text-yellow-300 text-sm">Rate: {option.rate}</p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-yellow-400 font-semibold">Fee: {option.fee}</p>
-                                    <p className="text-yellow-300 text-sm">Convenience: {option.convenience}</p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 text-center">
+                            <h5 className="font-semibold text-yellow-200 text-lg">Source Amount</h5>
+                            <p className="text-yellow-400 text-2xl font-bold">₹{results.sourceAmount?.toLocaleString()}</p>
+                            <p className="text-yellow-300 text-sm">{results.sourceCurrency}</p>
+                          </div>
+                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 text-center">
+                            <h5 className="font-semibold text-yellow-200 text-lg">Converted Amount</h5>
+                            <p className="text-yellow-400 text-2xl font-bold">{results.convertedAmount?.toLocaleString()}</p>
+                            <p className="text-yellow-300 text-sm">{results.destinationCurrency}</p>
+                          </div>
+                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 text-center">
+                            <h5 className="font-semibold text-yellow-200 text-lg">Exchange Rate</h5>
+                            <p className="text-yellow-400 text-2xl font-bold">{results.exchangeRate}</p>
+                            <p className="text-yellow-300 text-sm">1 {results.sourceCurrency} = {results.exchangeRate} {results.destinationCurrency}</p>
+                          </div>
+                          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 text-center">
+                            <h5 className="font-semibold text-yellow-200 text-lg">Last Updated</h5>
+                            <p className="text-yellow-400 text-lg font-bold">{results.lastUpdated}</p>
+                            <p className="text-yellow-300 text-sm">Real-time data</p>
                           </div>
                         </div>
+
+                        {/* Exchange Tips */}
+                        {results.exchangeTips && results.exchangeTips.length > 0 && (
+                          <div>
+                            <h5 className="font-semibold text-yellow-200 mb-3">Exchange Tips</h5>
+                            <div className="space-y-3">
+                              {results.exchangeTips.map((tip, index) => (
+                                <div key={index} className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
+                                  <div className="flex items-start space-x-3">
+                                    <div className="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                      {index + 1}
+                                    </div>
+                                    <div>
+                                      <h6 className="font-semibold text-yellow-200">{tip.title}</h6>
+                                      <p className="text-yellow-300 text-sm mt-1">{tip.description}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Exchange Websites */}
+                        {results.exchangeWebsites && results.exchangeWebsites.length > 0 && (
+                          <div>
+                            <h5 className="font-semibold text-yellow-200 mb-3">Recommended Exchange Websites</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {results.exchangeWebsites.map((website, index) => (
+                                <div key={index} className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <h6 className="font-semibold text-yellow-200">{website.name}</h6>
+                                      <p className="text-yellow-300 text-sm">{website.description}</p>
+                                    </div>
+                                    <a 
+                                      href={website.url} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+                                    >
+                                      Visit
+                                    </a>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Exchange Info */}
+                        {results.exchangeInfo && (
+                          <div>
+                            <h5 className="font-semibold text-yellow-200 mb-3">Additional Information</h5>
+                            <div className="bg-yellow-800/30 border border-yellow-600/30 rounded-lg p-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {Object.entries(results.exchangeInfo).map(([key, value]) => (
+                                  <div key={key}>
+                                    <p className="text-yellow-300 text-sm font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</p>
+                                    <p className="text-yellow-200">{value}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

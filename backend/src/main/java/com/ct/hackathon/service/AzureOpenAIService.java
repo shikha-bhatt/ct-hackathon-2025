@@ -56,6 +56,63 @@ public class AzureOpenAIService {
                 .doOnSuccess(result -> log.info("Successfully received response from Azure OpenAI"));
     }
 
+    public Mono<String> getForexExchangeRecommendations(String destination, Double amount, String sourceCurrency) {
+        String systemPrompt = """
+            You are a forex exchange expert specializing in international currency exchange for Indian travelers. 
+            Provide comprehensive, accurate, and up-to-date information about currency exchange for international travel. 
+            Include specific details about rates, fees, best practices, and provide actionable recommendations.
+            
+            Format your response in a structured way with clear sections for:
+            1. Current exchange rate information
+            2. Best platforms or services for currency exchange
+            3. RBI regulations and documentation requirements
+            4. Fees, charges, and hidden costs
+            5. Best practices for currency exchange
+            6. Restrictions or limitations
+            7. Most secure and reliable exchange methods
+            8. Exchange before travel or at destination
+            9. Alternative payment methods
+            10. Links to reliable exchange services
+            11. Current trends in exchange rates
+            12. Country-specific exchange information
+            
+            Be specific about the destination and provide real, actionable information.
+            """;
+
+        String userPrompt = String.format("""
+            I'm planning to travel to %s and need to exchange %s %s. 
+            Please provide comprehensive forex exchange information including:
+            
+            1. What's the current exchange rate for %s to the local currency of %s?
+            2. What are the best platforms or services to exchange currency?
+            3. What are the RBI regulations and documentation requirements?
+            4. What fees, charges, and hidden costs should I be aware of?
+            5. What are the best practices for currency exchange?
+            6. Are there any restrictions or limitations I should know about?
+            7. What are the most secure and reliable exchange methods?
+            8. Should I exchange before travel or at the destination?
+            9. What alternative payment methods are available?
+            10. Can you provide links to reliable exchange services?
+            11. What are the current trends in exchange rates?
+            12. Any country-specific exchange information for %s?
+            
+            Please provide comprehensive, detailed information that would help a traveler make an informed decision.
+            """, destination, amount, sourceCurrency, sourceCurrency, destination, destination);
+
+        List<AzureOpenAIRequest.Message> messages = List.of(
+                AzureOpenAIRequest.Message.builder()
+                        .role("system")
+                        .content(systemPrompt)
+                        .build(),
+                AzureOpenAIRequest.Message.builder()
+                        .role("user")
+                        .content(userPrompt)
+                        .build()
+        );
+
+        return getChatCompletion(messages);
+    }
+
     public Mono<String> getZeroForexCardRecommendations(String destination) {
         String systemPrompt = """
             You are a financial travel expert specializing in zero-forex credit cards. 

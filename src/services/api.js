@@ -424,6 +424,108 @@ export class TravelService {
     };
   }
 
+  async getForexInformation(destination, amount) {
+    try {
+      const response = await axios.post('http://localhost:8080/api/forex-exchange/info', {
+        destination: destination,
+        amount: parseFloat(amount),
+        currency: 'INR'
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching forex information:', error);
+      // Fallback to mock data if backend is not available
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            aiRecommendations: `Forex Exchange Information for ${destination}:
+
+**Exchange Rate Information:**
+- Current Exchange Rate: 1 INR = ${(Math.random() * 0.02 + 0.01).toFixed(4)} ${destination.toUpperCase()} (approximate)
+- Amount to Exchange: ₹${amount}
+- Expected Value: ${(parseFloat(amount) * (Math.random() * 0.02 + 0.01)).toFixed(2)} ${destination.toUpperCase()}
+
+**Best Places to Exchange Currency:**
+
+1. **Airport Exchange Counters**
+   - Convenience: High
+   - Rates: Lower (2-5% markup)
+   - Best for: Small amounts, emergency
+
+2. **Local Banks**
+   - Convenience: Medium
+   - Rates: Better (1-2% markup)
+   - Best for: Large amounts, better rates
+
+3. **Authorized Forex Dealers**
+   - Convenience: Medium
+   - Rates: Best (0.5-1% markup)
+   - Best for: Best rates, reliable service
+
+4. **ATMs**
+   - Convenience: High
+   - Rates: Good (1-3% markup)
+   - Best for: Convenient access, reasonable rates
+
+**Tips for Currency Exchange:**
+- Avoid exchanging at hotels (high markup)
+- Compare rates at multiple locations
+- Keep some local currency for immediate expenses
+- Use credit cards for larger purchases
+- Notify your bank before international travel
+
+**Required Documents:**
+- Valid passport
+- PAN card
+- Aadhaar card
+- Travel itinerary
+- Bank statement (for large amounts)
+
+**Exchange Limits:**
+- RBI limit: $250,000 per financial year
+- Single transaction: $10,000 (without documentation)
+- Large amounts require additional documentation
+
+**Safety Tips:**
+- Exchange only at authorized dealers
+- Count money before leaving
+- Keep receipts for record-keeping
+- Be aware of current exchange rates`,
+            destination: destination,
+            amount: amount,
+            exchangeRate: (Math.random() * 0.02 + 0.01).toFixed(4),
+            exchangeOptions: [
+              {
+                name: "Airport Exchange Counters",
+                convenience: "High",
+                markup: "2-5%",
+                bestFor: "Small amounts, emergency"
+              },
+              {
+                name: "Local Banks",
+                convenience: "Medium",
+                markup: "1-2%",
+                bestFor: "Large amounts, better rates"
+              },
+              {
+                name: "Authorized Forex Dealers",
+                convenience: "Medium",
+                markup: "0.5-1%",
+                bestFor: "Best rates, reliable service"
+              },
+              {
+                name: "ATMs",
+                convenience: "High",
+                markup: "1-3%",
+                bestFor: "Convenient access, reasonable rates"
+              }
+            ]
+          });
+        }, 2000);
+      });
+    }
+  }
+
   async getZeroForexCards(destination) {
     try {
       const response = await axios.post('http://localhost:8080/api/zero-forex-cards/recommendations', {
