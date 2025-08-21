@@ -41,7 +41,8 @@ function App() {
     duration: '',
     interests: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    origin: ''
   });
 
   // Forex Information State
@@ -137,7 +138,7 @@ function App() {
     setError(null);
     
     try {
-      const itinerary = await travelService.getInternationalItinerary(itinerarySearch.destination, itinerarySearch.duration, itinerarySearch.interests);
+      const itinerary = await travelService.getInternationalItinerary(itinerarySearch.origin, itinerarySearch.destination, itinerarySearch.duration, itinerarySearch.interests);
       setResults(itinerary);
     } catch (err) {
       setError('Failed to generate itinerary. Please try again.');
@@ -592,27 +593,39 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Destination
+                      Origin Country
                     </label>
-                    <input
-                      type="text"
-                      value={itinerarySearch.destination}
-                      onChange={(e) => setItinerarySearch({...itinerarySearch, destination: e.target.value})}
-                      placeholder="e.g., Paris, Tokyo, New York"
+                    <select
+                      value={itinerarySearch.origin}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, origin: e.target.value})}
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a country</option>
+                      <option value="USA">USA</option>
+                      <option value="UK">UK</option>
+                      <option value="Japan">Japan</option>
+                      <option value="India">India</option>
+                      <option value="Australia">Australia</option>
+                      {/* Add more countries as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Trip Duration
+                      Destination Country
                     </label>
-                    <input
-                      type="text"
-                      value={itinerarySearch.duration}
-                      onChange={(e) => setItinerarySearch({...itinerarySearch, duration: e.target.value})}
-                      placeholder="e.g., 5 days, 1 week, 10 days"
+                    <select
+                      value={itinerarySearch.destination}
+                      onChange={(e) => setItinerarySearch({...itinerarySearch, destination: e.target.value})}
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a country</option>
+                      <option value="USA">USA</option>
+                      <option value="UK">UK</option>
+                      <option value="Japan">Japan</option>
+                      <option value="India">India</option>
+                      <option value="Australia">Australia</option>
+                      {/* Add more countries as needed */}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -648,7 +661,7 @@ function App() {
                   </div>
                   <button
                     onClick={handleItinerarySearch}
-                    disabled={loading || !itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()}
+                    disabled={loading || !itinerarySearch.origin.trim() || !itinerarySearch.destination.trim() || !itinerarySearch.duration.trim()}
                     className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
@@ -697,7 +710,8 @@ function App() {
                       Amount to Exchange
                     </label>
                     <input
-                      type="text"
+                      type="number"
+                      min="1"
                       value={forexSearch.amount}
                       onChange={(e) => setForexSearch({...forexSearch, amount: e.target.value})}
                       placeholder="e.g., ₹50,000, $1000, €500"
