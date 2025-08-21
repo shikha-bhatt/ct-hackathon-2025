@@ -486,7 +486,6 @@ function App() {
                       <option value="USA">USA</option>
                       <option value="UK">UK</option>
                       <option value="Japan">Japan</option>
-                      <option value="India">India</option>
                       <option value="Australia">Australia</option>
                       {/* Add more countries as needed */}
                     </select>
@@ -558,7 +557,6 @@ function App() {
                       <option value="USA">USA</option>
                       <option value="UK">UK</option>
                       <option value="Japan">Japan</option>
-                      <option value="India">India</option>
                       <option value="Australia">Australia</option>
                       {/* Add more countries as needed */}
                     </select>
@@ -829,7 +827,6 @@ function App() {
                       <option value="USA">USA</option>
                       <option value="UK">UK</option>
                       <option value="Japan">Japan</option>
-                      <option value="India">India</option>
                       <option value="Australia">Australia</option>
                       {/* Add more countries as needed */}
                     </select>
@@ -888,7 +885,6 @@ function App() {
                       <option value="USA">USA</option>
                       <option value="UK">UK</option>
                       <option value="Japan">Japan</option>
-                      <option value="India">India</option>
                       <option value="Australia">Australia</option>
                       {/* Add more countries as needed */}
                     </select>
