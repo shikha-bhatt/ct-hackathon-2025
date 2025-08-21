@@ -18,6 +18,12 @@ public class SimInformationService {
     
     private static final Logger log = LoggerFactory.getLogger(SimInformationService.class);
     
+    private final AzureOpenAIService azureOpenAIService;
+    
+    public SimInformationService(AzureOpenAIService azureOpenAIService) {
+        this.azureOpenAIService = azureOpenAIService;
+    }
+    
     public Mono<SimInformationResponse> getSimInformation(SimInformationRequest request) {
         String destination = request.getDestination();
         
@@ -26,71 +32,18 @@ public class SimInformationService {
         
         log.info("Generating SIM information for destination: {}, duration: {}", destination, calculatedDuration);
         
-        return Mono.fromCallable(() -> {
-            // Generate comprehensive AI recommendations with comparisons
-            String aiRecommendations = generateComprehensiveRecommendations(destination, calculatedDuration);
-            
-            // Generate detailed SIM options with comparisons
-            SimInformationResponse.SimOptions simOptions = generateDetailedSimOptions(destination, calculatedDuration);
-            
-            return new SimInformationResponse(aiRecommendations, simOptions);
-        });
+        // Use Azure OpenAI to generate comprehensive recommendations
+        return azureOpenAIService.getSimInformationRecommendations(destination, calculatedDuration)
+                .map(aiRecommendations -> {
+                    // Generate detailed SIM options with comparisons
+                    SimInformationResponse.SimOptions simOptions = generateDetailedSimOptions(destination, calculatedDuration);
+                    
+                    return new SimInformationResponse(aiRecommendations, simOptions);
+                })
+                .doOnError(error -> log.error("Error generating SIM information for {}: {}", destination, error.getMessage()));
     }
     
-    private String generateComprehensiveRecommendations(String destination, String duration) {
-        // Enhanced prompt for comprehensive travel SIM analysis
-        String prompt = String.format(
-            "You are a travel connectivity expert. Provide comprehensive SIM card analysis for traveling to %s for %s.\n\n" +
-            "Include:\n" +
-            "1. **SIM Type Comparison** (Local SIM vs eSIM vs International SIM vs Roaming)\n" +
-            "2. **Cost Analysis** (Total cost including activation, data, and hidden fees)\n" +
-            "3. **Network Coverage** (Best carriers for different regions in %s)\n" +
-            "4. **Acquisition Methods** (Where and how to get each SIM type)\n" +
-            "5. **Travel Tips** (Best practices, activation time, customer support)\n" +
-            "6. **Risk Assessment** (Potential issues and how to avoid them)\n\n" +
-            "Format as a comprehensive guide with clear recommendations and comparisons.",
-            destination, duration, destination
-        );
-        
-        // This would call Azure OpenAI - for now returning enhanced mock data
-        return String.format(
-            "## 🌍 **Comprehensive SIM Analysis for %s (%s)**\n\n" +
-            "### 📊 **SIM Type Comparison**\n\n" +
-            "**🥇 Local SIM Card (RECOMMENDED for %s)**\n" +
-            "- **Cost**: $20-50 for %s\n" +
-            "- **Coverage**: Best local network coverage\n" +
-            "- **Data**: 5-20GB included\n" +
-            "- **Activation**: 24-48 hours\n" +
-            "- **Customer Support**: Local language support\n\n" +
-            "**🥈 eSIM (BEST for short trips)**\n" +
-            "- **Cost**: $15-30 for %s\n" +
-            "- **Coverage**: Good coverage, instant activation\n" +
-            "- **Data**: 3-10GB included\n" +
-            "- **Activation**: Instant\n" +
-            "- **Customer Support**: 24/7 online support\n\n" +
-            "**🥉 International SIM (AVOID for %s)**\n" +
-            "- **Cost**: $40-80 for %s\n" +
-            "- **Coverage**: Limited, expensive roaming\n" +
-            "- **Data**: 1-5GB included\n" +
-            "- **Activation**: 24-72 hours\n" +
-            "- **Customer Support**: Poor international support\n\n" +
-            "**❌ Roaming (NOT RECOMMENDED)**\n" +
-            "- **Cost**: $100-200+ for %s\n" +
-            "- **Coverage**: Same as home network\n" +
-            "- **Data**: Very limited\n" +
-            "- **Activation**: Instant but expensive\n" +
-            "- **Customer Support**: Home carrier support\n\n" +
-            "### 🏆 **Final Recommendation**\n" +
-            "For %s in %s, **get a local SIM card** if staying more than 3 days, or **use eSIM** for shorter trips.\n\n" +
-            "### 💡 **Pro Tips**\n" +
-            "1. **Book in advance** - Order eSIM online before travel\n" +
-            "2. **Bring ID** - Passport required for local SIM activation\n" +
-            "3. **Test coverage** - Check network strength at your accommodation\n" +
-            "4. **Keep backup** - Have eSIM as backup option\n" +
-            "5. **Local knowledge** - Ask hotel staff for best carrier recommendations",
-            destination, duration, destination, duration, duration, destination, duration, duration, destination, duration, duration
-        );
-    }
+
     
     private SimInformationResponse.SimOptions generateDetailedSimOptions(String destination, String duration) {
         SimInformationResponse.SimOptions simOptions = new SimInformationResponse.SimOptions();
