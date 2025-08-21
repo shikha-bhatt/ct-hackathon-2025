@@ -750,13 +750,19 @@ function App() {
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       Destination
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={zeroForexSearch.destination}
                       onChange={(e) => setZeroForexSearch({...zeroForexSearch, destination: e.target.value})}
-                      placeholder="e.g., USA, Europe, Asia, Worldwide"
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a country</option>
+                      <option value="USA">USA</option>
+                      <option value="UK">UK</option>
+                      <option value="Japan">Japan</option>
+                      <option value="India">India</option>
+                      <option value="Australia">Australia</option>
+                      {/* Add more countries as needed */}
+                    </select>
                   </div>
                   <button
                     onClick={handleZeroForexSearch}
