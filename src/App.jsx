@@ -343,7 +343,6 @@ function App() {
               { id: 'route', label: 'Route Planning', icon: MapPin, color: 'from-violet-500 to-purple-500' },
               { id: 'sim-info', label: 'SIM Information', icon: Smartphone, color: 'from-blue-500 to-cyan-500' },
               { id: 'visa-info', label: 'Visa Information', icon: FileCheck, color: 'from-green-500 to-emerald-500' },
-              { id: 'insurance-info', label: 'Insurance Information', icon: Shield, color: 'from-orange-500 to-red-500' },
               { id: 'itinerary', label: 'International Itinerary', icon: Route, color: 'from-indigo-500 to-purple-500' },
               { id: 'forex', label: 'Forex Exchange', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
               { id: 'zero-forex', label: 'Zero-Forex Cards', icon: CreditCard, color: 'from-teal-500 to-green-500' }
